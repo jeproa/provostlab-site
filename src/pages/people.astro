@@ -101,47 +101,55 @@ const alumni = [
   <h1>People</h1>
 
   <h2>Team</h2>
-  {team.map((p) => (
-    <div class="person">
-      <img class="avatar" src={`${base}people/${slug(p.name)}.jpg`} alt={p.name} loading="lazy" width="72" height="72" />
-      <div>
+  <div class="people-grid">
+    {team.map((p) => (
+      <div class="person">
+        <img class="avatar" src={`${base}people/${slug(p.name)}.jpg`} alt={p.name} loading="lazy" />
         <div class="person-name">{p.name}</div>
         <p class="person-body">{p.body}</p>
       </div>
-    </div>
-  ))}
+    ))}
+  </div>
 
   <h2>Alumni</h2>
-  {alumni.map((p) => (
-    <div class="person">
-      <img class="avatar" src={`${base}people/${slug(p.name)}.jpg`} alt={p.name} loading="lazy" width="72" height="72" />
-      <div>
+  <div class="people-grid">
+    {alumni.map((p) => (
+      <div class="person">
+        <img class="avatar" src={`${base}people/${slug(p.name)}.jpg`} alt={p.name} loading="lazy" />
         <div class="person-name">{p.name}</div>
         <p class="person-body">{p.body}</p>
       </div>
-    </div>
-  ))}
+    ))}
+  </div>
 
   <style>
     h2 {
       color: var(--accent-dark);
       border-bottom: 1px solid var(--line);
       padding-bottom: 6px;
+      margin-top: 36px;
     }
-    .person { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px; }
+    .people-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 28px 24px;
+      margin-top: 18px;
+    }
+    .person { display: flex; flex-direction: column; }
     .avatar {
-      width: 72px;
-      height: 72px;
-      border-radius: 10px;
+      width: 100%;
+      aspect-ratio: 1 / 1;
       object-fit: cover;
-      flex-shrink: 0;
+      border-radius: 12px;
       background: #eef1f5;
+      display: block;
     }
-    .person-name { font-weight: 600; }
+    .person-name { font-weight: 600; margin-top: 10px; }
     .person-body {
-      margin: 2px 0 0;
+      margin: 4px 0 0;
       color: var(--muted);
-      font-size: 15px;
+      font-size: 14px;
+      line-height: 1.5;
     }
   </style>
 </Base>
