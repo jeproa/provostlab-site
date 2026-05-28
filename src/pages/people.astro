@@ -1,7 +1,167 @@
 ---
 import Base from '../layouts/Base.astro';
+
+const currentGroups = [
+  {
+    title: 'Principal Investigator',
+    people: [
+      {
+        name: 'Jean Provost, Ph.D., ing.',
+        role: 'Professor',
+        note: 'Member of the Montreal Heart Institute, the UdeM/Polytechnique Biomedical Engineering Institute, IVADO, and TransMedTech.',
+      },
+    ],
+  },
+  {
+    title: 'Research Staff',
+    people: [
+      { name: 'Jonathan Porée, Ph.D.', role: 'Research Associate', note: 'Heads the TransMedTech mobile ultrasound imaging platform; myocardial ultrasound localization angiography.' },
+      { name: 'Stephen A. Lee, Ph.D.', role: 'Postdoctoral Scientist', note: 'Simulations and single-capillary reporters for neurovascular processes.' },
+      { name: 'Nin Ghigo, Ph.D.', role: 'Postdoctoral Scientist', note: 'Pulsatility imaging; industrial and governmental collaborations.' },
+    ],
+  },
+  {
+    title: 'PhD Candidates',
+    people: [
+      { name: 'Paul Xing', role: 'PhD Candidate', note: 'Transcranial imaging and aberration correction. NSERC, FRQ, TransMedTech.' },
+      { name: 'Oleksandra Gulenko', role: 'PhD Candidate', note: 'Brain vasculature changes from ultrasound therapies (co-supervised with Dr. Abbas Sadikot, McGill). FRQ, TransMedTech.' },
+      { name: 'Alice Wu', role: 'PhD Candidate', note: '3D Dynamic Ultrasound Localization Microscopy (co-supervised with Dr. Michaël Chassé, CHUM). FRQ, TransMedTech.' },
+      { name: 'Alexis Leconte', role: 'PhD Candidate', note: 'Ultrasound Localization Microscopy for myocardial imaging (co-supervised with Dr. Jean-Claude Tardif, MHI). FRQ, TransMedTech.' },
+    ],
+  },
+  {
+    title: 'Interns',
+    people: [
+      { name: 'Cai Jie', note: '4D spatiotemporal tracking. NSERC.' },
+      { name: 'Marco Pontrelli', note: 'Aberration correction in transmit. NSERC.' },
+      { name: 'Malo Rossetto', note: 'Track-based graph representation of brain vasculature.' },
+      { name: 'Ludovic Goetz', note: 'Voxel-wise speed-of-sound correction for row-column array probes.' },
+      { name: 'Maxence Laplante-Berthier', note: 'Validation of ULM maps against simulations. NSERC, UPIR.' },
+      { name: 'Valentin Jourdan', note: 'Automatic labelling of ULM vasculature.' },
+      { name: 'Naomi Babii', note: 'Validation of ULM maps against histology. NSERC, UPIR, FRQ.' },
+    ],
+  },
+  {
+    title: 'Collaborators',
+    people: [
+      { name: 'David Bracco, MD, Ph.D.', note: 'High-frequency imaging of heart intramyocardial vasculature.' },
+    ],
+  },
+];
+
+const alumniGroups = [
+  {
+    title: 'Postdoctoral Researchers',
+    people: [
+      { name: 'Vincent Perrot, Ph.D.', note: 'Postdoctoral scientist, 2020–2022. Now Senior Research Scientist at DarkVision.' },
+    ],
+  },
+  {
+    title: 'PhD',
+    people: [
+      { name: 'Brice Rauby, Ph.D.', note: 'Deep learning for 3D ULM; member of Mila. IVADO, FRQ, TransMedTech. Now at SoundBlade Medical.' },
+      { name: 'Chloé Bourquin, Ph.D.', note: "The lab's first PhD student. FRQ, TransMedTech. Now Journalist at La Presse." },
+    ],
+  },
+  {
+    title: 'M.Sc.A.',
+    people: [
+      { name: 'Samuel Desmarais', note: 'Now PhD candidate at TU Delft.' },
+      { name: 'Olivier Caron', note: "Now Chargé d'étude at Atelier 7Hz." },
+      { name: 'Hatim Belgharbi', note: 'Now PhD candidate at UNC Chapel Hill.' },
+      { name: 'Michael Mougharbel', note: 'Now QA engineer at the Montreal Heart Institute.' },
+      { name: 'Simon Blais', note: 'Now Concepteur Mécanique at CLEIO.' },
+      { name: 'Erwan Hardy', note: 'Now R&D engineer at Quantel Medical.' },
+      { name: 'Philippe Cormier', note: 'Now R&D engineer at Puzzle Medical.' },
+    ],
+  },
+];
+
+const formerInterns = [
+  { year: '2024', names: 'Simon Desrochers, Pierre-Olivier Bouchard, Louis Caron, Emma Gauvreau, Théodore Brierre' },
+  { year: '2023', names: 'Michael Mayerhofer (2022–2024), Baptiste Didier, Jean Ropert' },
+  { year: '2022', names: 'Tim Whittaker, Aurélie Roseberry, Juliette Reydet, Léo Milecki (visiting scientist)' },
+  { year: '2021', names: 'David Arsenault-Belley, Yangou Dou, Julie Lanthier, Thomas Ricard, Tom Quelin, William Beaulieu (2020–2021)' },
+  { year: '2020', names: 'Élodie Labrecque Langlais, Jacynthe Francoeur (2019–2020), Jean-François Martin (2019–2020)' },
+  { year: '2019', names: 'Arthur Le Ber, Léo Milecki' },
+];
 ---
 <Base title="People — Provost Ultrasound Lab">
   <h1>People</h1>
-  <p><em>Content to be ported from the current site.</em></p>
+
+  <h2>Current Members</h2>
+  {currentGroups.map((group) => (
+    <section class="group">
+      <h3>{group.title}</h3>
+      <ul class="people">
+        {group.people.map((p) => (
+          <li class="person">
+            <span class="person-name">{p.name}</span>
+            {p.role && <span class="person-role">{p.role}</span>}
+            {p.note && <span class="person-note">{p.note}</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <h2>Alumni</h2>
+  {alumniGroups.map((group) => (
+    <section class="group">
+      <h3>{group.title}</h3>
+      <ul class="people">
+        {group.people.map((p) => (
+          <li class="person">
+            <span class="person-name">{p.name}</span>
+            {p.note && <span class="person-note">{p.note}</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <section class="group">
+    <h3>Former Interns</h3>
+    <ul class="years">
+      {formerInterns.map((y) => (
+        <li><span class="year">{y.year}</span> {y.names}</li>
+      ))}
+    </ul>
+  </section>
+
+  <style>
+    .group { margin-bottom: 28px; }
+    h3 {
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+    }
+    .people {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 28px;
+    }
+    @media (max-width: 640px) {
+      .people { grid-template-columns: 1fr; }
+    }
+    .person { display: flex; flex-direction: column; }
+    .person-name { font-weight: 600; }
+    .person-role { font-size: 13px; color: var(--accent); }
+    .person-note { font-size: 14px; color: var(--muted); }
+    .years { list-style: none; padding: 0; margin: 0; }
+    .years li { margin-bottom: 8px; color: var(--muted); font-size: 14px; }
+    .year {
+      display: inline-block;
+      min-width: 44px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+  </style>
 </Base>

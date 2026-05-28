@@ -24,6 +24,12 @@ const isActive = (h) => here === link(h).replace(/\/$/, '');
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <link rel="icon" href={`${base}favicon.svg`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
   </head>
   <body>
     <header class="site-header">
@@ -47,17 +53,20 @@ const isActive = (h) => here === link(h).replace(/\/$/, '');
 
     <style is:global>
       :root {
-        --accent: #1a4f8b;
+        --accent: #00477b;        /* clean institutional blue */
+        --accent-dark: #002f54;
         --ink: #1d2733;
         --muted: #5f6b7a;
         --line: #e3e8ef;
         --maxw: 960px;
+        --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       }
       * { box-sizing: border-box; }
       html { scroll-behavior: smooth; }
       body {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-family: var(--font);
+        -webkit-font-smoothing: antialiased;
         color: var(--ink);
         line-height: 1.6;
         background: #fff;
@@ -78,7 +87,8 @@ const isActive = (h) => here === link(h).replace(/\/$/, '');
         font-weight: 700;
         font-size: 18px;
         text-decoration: none;
-        color: var(--ink);
+        color: var(--accent-dark);
+        letter-spacing: -0.01em;
       }
       .site-nav {
         display: flex;
@@ -97,7 +107,7 @@ const isActive = (h) => here === link(h).replace(/\/$/, '');
         margin: 0 auto;
         padding: 32px 24px 64px;
       }
-      .content h1 { font-size: 28px; margin-top: 0; }
+      .content h1 { font-size: 30px; margin-top: 0; color: var(--accent-dark); letter-spacing: -0.01em; }
       .content h2 { font-size: 20px; margin-top: 36px; }
       .site-footer {
         border-top: 1px solid var(--line);
