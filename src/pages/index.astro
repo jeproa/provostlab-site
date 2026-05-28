@@ -1,14 +1,332 @@
 ---
 import Base from '../layouts/Base.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '') + '/';
+const img = (n) => `${base}news/${n}.jpg`;
+
+const news = [
+  {
+    date: 'February 2026',
+    title: 'Congrats to Brice Rauby, Ph.D.!',
+    images: ['news-01'],
+    body: [
+      'Brice has just brilliantly defended his doctoral thesis on applying deep learning to ultrasound localization microscopy (ULM). His work includes a comprehensive and insightful review of the field, as well as major contributions to leveraging sparse structures for 3D ULM reconstruction.',
+      'Most notably, Brice worked toward the creation and public release of the largest in vivo ULM dataset to date. Building on this achievement, he developed the first deep-learning model trained directly on in vivo ULM data—a milestone that sets a new benchmark for the community and opens exciting research avenues.',
+      'We are incredibly proud of Brice’s accomplishments and look forward to seeing the impact of his work on the future of ULM and biomedical imaging. Many thanks to Lucien Weiss, Hervé Lombaert, Hassan Rivaz and François Leduc-Primeau for their thoughtful questions and for a lively, engaging discussion during the defense.',
+    ],
+  },
+  {
+    date: 'January 2026',
+    title: 'New paper in PNAS with coverage by the Canadian Press',
+    body: [
+      'Excited to share that our paper was just published in The Proceedings of the National Academy of Sciences!',
+      'It is now becoming clear that many neuropathologies are linked to microvascular changes in the brain. At the interface between the microvasculature and the neural system lie vast networks of capillaries that dynamically adapt to the brain’s energy demands. Yet, noninvasively visualizing and functionally assessing these vessels throughout the brain remains challenging.',
+      'Here, we introduce Single Capillary Reporters (SCaRe), a method for identifying small capillary vessels using ultrasound localization microscopy based on gap-less acquisitions, long ensemble spatiotemporal filtering, and Hidden Markov Model state-estimation. We show how insights from microvascular simulations can be translated to in vivo measurements of neuroinflammation, opening pathways to broader microvascular investigations of brain disorders.',
+      'The work was also covered by Polytechnique Montréal and by the Canadian press in La Presse and CityNews. Thank you to my coauthors: Alexis Leconte, Alice Wu, Joshua Kinugasa, Gerardo Ramos Palacios, Jonathan Porée, Abbas Sadikot, Andreas Linninger, and Jean Provost; and to our funding sources: the CIHR Postdoctoral Fellowship, the NSERC Vanier-Banting Postdoctoral Fellowship, and the TransMedTech Postdoctoral Scholarship.',
+    ],
+    links: [
+      { label: 'Code (Zenodo)', url: 'https://zenodo.org/records/18065421' },
+      { label: 'Data (FRDR)', url: 'https://www.frdr-dfdr.ca/repo/dataset/efe60443-6b7d-4d22-a668-338e42c8dbb7' },
+      { label: 'Polytechnique Montréal article', url: 'https://polymtl.info/JHrnu' },
+    ],
+  },
+  {
+    date: 'December 2025',
+    title: 'Laboratory End-of-the-Year Dinner',
+    images: ['news-02'],
+    body: [
+      'To celebrate a year rich in successes, the entire team gathered for our traditional end-of-the-year dinner. It was a wonderful opportunity to highlight everyone’s exceptional work and to strengthen our bonds outside of the laboratory. What a great way to wrap up 2025 before diving into exciting new projects this January!',
+    ],
+  },
+  {
+    date: 'November 2025',
+    title: 'New publication: Inverse Problem Approach to Aberration Correction for In Vivo Transcranial Imaging Based on a Sparse Representation of Contrast-Enhanced Ultrasound Data',
+    images: ['news-03'],
+    body: [
+      'Paul Xing and co-authors have published a new paper in IEEE Transactions on Biomedical Engineering.',
+      'In this work, we present an inverse problem approach to aberration correction (IPAC) that leverages the sparsity of microbubble signals. We propose to use the a priori knowledge of the medium based upon microbubble localization and wave propagation to build a forward model to link the measured signals directly to the aberration function. We showed that IPAC can perform skull-induced aberration correction and improved power Doppler as well as ULM images acquired on the mouse brain.',
+    ],
+    links: [{ label: 'DOI: 10.1109/TBME.2025.3564473', url: 'https://doi.org/10.1109/TBME.2025.3564473' }],
+  },
+  {
+    date: 'September 18th, 2025',
+    title: '7 papers at the IEEE International Ultrasonics Symposium',
+    images: ['news-04'],
+    body: [
+      'We were happy to present our work at IUS this year! Jonathan and Paul showed how weak and strong aberrations caused by the skull could be corrected for in a practical, repeatable manner.',
+      'Alice and Stephen presented how long ensemble processing could enable better pulse wave velocity measurements and vessel labelling. Oleksandra presented her novel high-frequency theragnostic approach for BBB opening and monitoring using dynamic ULM. Nin revealed our soon-to-be-released giant dataset of in vivo mouse brain acquisitions, which Brice leveraged to demonstrate the benefits of using in vivo data to develop deep-learning reconstruction strategies. Finally, Alexis described his realistic simulation framework to improve cardiac dynamic ULM in humans. Stay tuned for the associated publications!',
+    ],
+  },
+  {
+    date: 'September 10th, 2025',
+    title: 'New publication: 3D transcranial Dynamic Ultrasound Localization Microscopy in the mouse brain using a Row-Column Array',
+    images: ['news-05'],
+    body: [
+      'Alice Wu and co-authors have published a new paper in IEEE Transactions on Biomedical Engineering (online ahead of print).',
+      'In this work, we demonstrate a first-of-its-kind 3D+t Dynamic Ultrasound Localization Microscopy (DULM) protocol using a Row-Column Array (RCA) to measure blood flow in the whole mouse brain transcranially with both high spatial and temporal resolution. The technique acquires volumetric images at 750 Hz using 42 tilted plane waves, enabling super-resolved density and velocity maps of the 3D brain vascular network.',
+    ],
+    links: [{ label: 'DOI: 10.1109/TBME.2025.3598693', url: 'https://doi.org/10.1109/TBME.2025.3598693' }],
+  },
+  {
+    date: 'May 28th, 2025',
+    title: 'Our Team Shines at the Québec Medical Imaging Symposium 2025',
+    images: ['news-06'],
+    body: [
+      'Université Laval’s Centre de recherche en données massives (CRDM) hosted the second edition of its symposium on medical imaging, organized in collaboration with the Réseau de bio-imagerie du Québec (RBIQ) and the Réseau santé numérique (RSN).',
+      'We are proud to share that eight members of the lab presented their work during this event, showcasing the diversity and excellence of our ongoing research. A special congratulations to Professor Jean Provost, who received the Rising Star Award in Bio-imaging, and to Alexis Leconte, PhD student, who was honored with the Best Student Oral Presentation Award.',
+    ],
+  },
+  {
+    date: 'April 2nd, 2025',
+    title: 'Our PhD Students at the First Edition of Polycongré!',
+    images: ['news-07'],
+    body: [
+      'The first edition of Polycongré was recently held at Polytechnique Montréal, providing a unique platform to showcase student research—organized by students, for students.',
+      'Three PhD students from our lab had the opportunity to present their work: Alice presented her research with a poster; Alexis also presented a poster and served as session chair for multiple sessions; and Oleksandra gave an oral presentation. Congratulations to them for representing the lab at this promising first edition of Polycongré!',
+    ],
+  },
+  {
+    date: 'March 24th, 2025',
+    title: 'New publication: Pruning Sparse Tensor Neural Networks Enables Deep Learning for 3D Ultrasound Localization Microscopy',
+    images: ['news-08'],
+    body: [
+      'Brice Rauby and co-authors have published a new paper in IEEE Transactions on Image Processing.',
+      'In this work, we propose the use of sparse tensor neural networks to enable deep learning-based 3D ULM by improving memory scalability with increased dimensionality. In 3D, the proposed approach reduces memory requirements by two orders of magnitude while largely outperforming conventional ULM in high-concentration settings. We show that sparse tensor neural networks in 3D ULM allow for the same benefits as dense deep learning-based methods in 2D ULM, i.e. the use of higher concentration in silico and reduced acquisition time.',
+    ],
+  },
+  {
+    date: 'February 11th, 2025',
+    title: 'Alexis presented his work at Polytechnique’s Biomedical Department',
+    images: ['news-09'],
+    body: [
+      'Alexis had the opportunity to present his research at the Biomedical Engineering Department of Polytechnique Montréal as part of Pizza Biomed. This informal event allows biomedical engineering students to learn about ongoing research in their field.',
+      'Alexis shared his work and engaged in discussions with students, providing them with insight into current scientific advancements. A great initiative to bridge the gap between research and the next generation of biomedical engineers!',
+    ],
+  },
+  {
+    date: 'February 4th, 2025',
+    title: 'New publication: A Tracking Prior to Localization Workflow for Ultrasound Localization Microscopy',
+    images: ['news-10'],
+    body: [
+      'Alexis Leconte and co-authors have published a new paper in IEEE Transactions on Medical Imaging.',
+      'In this work, we propose a Tracking prior to Localization (TAL) workflow for Ultrasound Localization Microscopy (ULM). Unlike the conventional Localization and Tracking (LAT) approach—where microbubbles are first localized and then tracked—our method first estimates the motion of microbubbles and subsequently performs localization along their predicted trajectories. This inversion improves robustness in high-concentration conditions, where overlapping signals make localization challenging. Through both in silico and in vivo experiments, we demonstrate that the TAL framework enhances vessel reconstruction, increases localization accuracy, and provides more reliable velocity maps compared to traditional approaches.',
+    ],
+  },
+  {
+    date: 'December 20th, 2024',
+    title: 'New publication: 3D ultrasound localization microscopy of the nonhuman primate brain',
+    images: ['news-11'],
+    body: [
+      'Paul Xing and co-authors have published a new paper in EBioMedicine.',
+      'In this work, we tested the feasibility of 3D ULM of the nonhuman primate (NHP) brain with a single 256-channel programmable ultrasound scanner. We achieved a highly resolved vascular map of the macaque brain at large depth (down to 3 cm) in the presence of craniotomy and durectomy using an 8-MHz multiplexed matrix probe. We were able to distinguish vessels as small as 26.9 µm, and demonstrated that transcranial imaging of the macaque brain at similar depth was feasible using a 3-MHz probe, achieving a resolution of 60 µm.',
+    ],
+  },
+  {
+    date: 'September 30th, 2024',
+    title: 'The laboratory was present at IEEE IUS Taiwan 2024',
+    images: ['news-12'],
+    body: [
+      'Our team recently took part in the IEEE IUS conference in Taiwan. The event was an opportunity to present our work, exchange ideas with experts in the field and discover another part of the world. An enriching experience that motivates us for the future!',
+    ],
+  },
+  {
+    date: 'September 17th, 2024',
+    title: 'New publication: Deep Learning in Ultrasound Localization Microscopy: Applications and Perspectives',
+    images: ['news-13'],
+    body: [
+      'Brice Rauby and co-authors have published a new paper in IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control.',
+      'We propose a comprehensive review of the diversity of deep learning applications in ULM, focusing on approaches assuming a sparse microbubble distribution. We first provide an overview of how existing studies vary in the constitution of their datasets or in the tasks targeted by the deep learning model. We also take a deeper look into the numerous approaches proposed to improve the localization of microbubbles, and finally discuss the current limitations and challenges of these methods, as well as the promises and potential of deep learning for ULM in the future.',
+    ],
+  },
+  {
+    date: 'August 30th, 2024',
+    title: 'First participation at a Gordon Research Conference',
+    images: ['news-14'],
+    body: [
+      'We had the pleasure of taking part for the first time in a Gordon Research Conference: the In Vivo Ultrasound Imaging Conference. Jean gave an invited presentation on the laboratory’s work, and Alexis, Alice and Nin presented their posters.',
+    ],
+  },
+  {
+    date: 'May 15th, 2024',
+    title: 'Our lab will be present at ISBI in Athens',
+    images: ['news-15'],
+    body: [
+      'Thrilled to announce that Stephen and Paul, two members of our laboratory, will present their latest research at ISBI in Athens!',
+    ],
+  },
+  {
+    date: 'February 2024',
+    title: 'New publication: Phase Aberration Correction for In Vivo Ultrasound Localization Microscopy Using a Spatiotemporal Complex-Valued Neural Network',
+    images: ['news-16'],
+    body: [
+      'Paul Xing and co-authors have published a new paper in IEEE Transactions on Medical Imaging.',
+      'In this work, we proposed a deep learning approach based on recently introduced complex-valued convolutional neural networks (CV-CNNs) to retrieve the aberration function, which can then be used to form enhanced images using standard delay-and-sum beamforming. 3D spatiotemporal convolutions were used for the network to leverage entire microbubble tracks. The CV-CNN was more robust than the coherence-based method and could perform aberration correction in a 6-month-old mouse.',
+    ],
+  },
+  {
+    date: 'November 9th, 2023',
+    title: 'Chloé, Stephen and Paul honored at PolyChrome Gala',
+    images: ['news-17', 'news-18'],
+    body: [
+      'Three of our colleagues were honoured at the PolyChrome Gala for their achievements: Chloé, for first prize in the Fernand-Seguin scholarship (Association des communicateurs scientifiques du Québec); Stephen, for the Banting Postdoctoral Fellowship (Government of Canada); and Paul, for the Canada Graduate Scholarship at the doctoral level (NSERC).',
+    ],
+  },
+  {
+    date: 'June 9th, 2023',
+    title: 'Alexis is one of the finalists of the “La preuve par l’image” contest!',
+    images: ['news-19'],
+    body: [
+      'Alexis, a research master’s student in the laboratory, has been selected as a finalist in the Acfas “La preuve par l’image” competition! His image, “The Vessels of Memory”, was a candidate for the People’s Choice Award presented by the TV show Découverte on Radio-Canada. Congratulations, Alexis!',
+    ],
+  },
+  {
+    date: 'June 2nd, 2023',
+    title: 'Chloé wins 1st prize in the Fernand-Seguin 2023 Scholarship!',
+    images: ['news-20'],
+    body: [
+      'Chloé, a doctoral student in the laboratory, won first prize for the Fernand-Seguin Scholarship 2023 from the Association of Scientific Communicators of Quebec! This scholarship will give her access to multiple internships in science journalism next year. Congratulations to her!',
+    ],
+  },
+  {
+    date: 'December 14th, 2022',
+    title: 'Article in “Curium” magazine!',
+    images: ['news-21'],
+    body: [
+      'Chloé had the opportunity to talk about her research and science journalism activities in Curium magazine, on the occasion of receiving the Relève étoile Louis-Berlinguet award from the Fonds de recherche du Québec – Nature et technologies (FRQNT). This award was given to her following the publication of her very first paper, “In Vivo Pulsatility Measurement of Cerebral Microcirculation in Rodents Using Dynamic Ultrasound Localization Microscopy”, published in IEEE TMI in April 2022.',
+    ],
+  },
+  {
+    date: 'May 17th, 2022',
+    title: 'Article in “l’Actualité” magazine!',
+    images: ['news-22'],
+    body: [
+      'Chloé was awarded the 29th Acfas Research Popularization Competition (text format). Her text was published by the magazine l’Actualité, in an article entitled “Dementia: better understanding the role of blood circulation”.',
+    ],
+  },
+  {
+    date: 'December 3rd, 2019',
+    title: 'TransMedTech Scholarship Awarded to Vincent',
+    body: [
+      'Vincent, our future postdoctoral researcher who will arrive in February, was awarded a TransMedTech Fellowship to work on 3D ultrasound localization microscopy. TransMedTech offers a unique environment, bringing together researchers and different parties in biomedical engineering from various fields. Congratulations to him!',
+    ],
+  },
+  {
+    date: 'November 1st, 2019',
+    title: 'Arrival of interns',
+    body: [
+      'At the beginning of November, three new interns joined the laboratory: Jacynthe, 3rd-year Biomedical Engineering student; Jean-François, 3rd-year Engineering Physics student; and Paul, Engineering Physics student with an M.Sc. in Neurological Science. They will work on projects such as flow phantoms and aberration correction. Welcome to the laboratory!',
+    ],
+  },
+  {
+    date: 'October 9th, 2019',
+    title: 'Chloé’s presentation at IEEE IUS 2019',
+    images: ['news-23'],
+    body: [
+      'Chloé presented her work, “Pulsatility mapping using time-resolved ultrasound localization microscopy in the rodent’s brain in vivo”, at the IEEE IUS 2019 international conference in Glasgow, Scotland. She gave an oral presentation on her first results of 2D in vivo pulsatility measurement in the rat brain, and showed the first images of Dynamic Ultrasound Localization Microscopy.',
+    ],
+  },
+  {
+    date: 'October 1st, 2019',
+    title: 'Jacynthe, Jean-François, Paul and Samuel receive UPIR Scholarships',
+    body: [
+      'Congratulations to Jacynthe, Jean-François, Paul and Samuel, who received Unit for Participation and Initiation in Research (UPIR) scholarships from Polytechnique Montréal. These grants will allow them to move forward on their projects in the laboratory!',
+    ],
+  },
+  {
+    date: 'September 27th, 2019',
+    title: 'QBIN Scholarships Awarded to Erwan and Chloé',
+    body: [
+      'Congratulations to Erwan and Chloé, master’s and PhD students, who have both just received a Québec Bio-Imaging Network (QBIN) scholarship. Erwan will continue to work on compressed ultrasonic acquisition methods, while Chloé will work on the feasibility of measuring pulsatility in the brain in vivo by developing the Dynamic Ultrasound Localization Microscopy (DULM) method.',
+    ],
+  },
+  {
+    date: 'September 6th, 2019',
+    title: 'Chloé, Philippe and Hatim at the Engineering Physics Day at Polytechnique Montréal',
+    images: ['news-24'],
+    body: [
+      'Chloé, Hatim and Philippe presented their work during the Physics Day organised at Polytechnique Montréal. Hatim obtained first prize in the competition for the best poster. Congratulations to all three!',
+    ],
+  },
+  {
+    date: 'June 19th, 2019',
+    title: 'NSERC USRA Scholarship Awarded to Samuel',
+    images: ['news-25'],
+    body: [
+      'Samuel was awarded an Undergraduate Student Research Award (USRA) from the Natural Sciences and Engineering Research Council of Canada, to fund his summer internship. Congratulations to him!',
+    ],
+  },
+  {
+    date: 'June 19th, 2019',
+    title: 'Chloé’s presentation at the 22nd Research Day at the Montreal Heart Institute',
+    body: [
+      'Chloé presented her work during a poster session for the 22nd Research Day at the Montreal Heart Institute (ICM). During this science-outreach competition organized for students, postdoctoral fellows, residents and research supervisors, she connected with doctors and specialists in atherosclerosis, as well as patients who suffered from cardiovascular disease.',
+    ],
+  },
+];
 ---
 <Base title="Provost Ultrasound Lab">
   <h1>Provost Ultrasound Lab</h1>
-  <p>
-    We are a research group at Polytechnique Montréal developing next-generation
-    ultrasound imaging — including ultrasound localization microscopy (ULM) and
-    functional ultrasound — to image the body and brain at unprecedented resolution.
-  </p>
 
-  <h2>News</h2>
-  <p><em>Content to be ported from the current site.</em></p>
+  {news.map((e) => (
+    <article class="news">
+      <div class="news-date">{e.date}</div>
+      <h2 class="news-title">{e.title}</h2>
+      {e.images && (
+        <div class="news-media">
+          {e.images.map((n) => (
+            <img src={img(n)} alt={e.title} loading="lazy" />
+          ))}
+        </div>
+      )}
+      {e.body.map((p) => <p>{p}</p>)}
+      {e.links && (
+        <ul class="news-links">
+          {e.links.map((l) => (
+            <li><a href={l.url} target="_blank" rel="noopener">{l.label}</a></li>
+          ))}
+        </ul>
+      )}
+    </article>
+  ))}
+
+  <style>
+    .news {
+      padding: 26px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .news:last-child { border-bottom: none; }
+    .news-date {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+    .news-title {
+      font-size: 19px;
+      margin: 4px 0 12px;
+      color: var(--accent-dark);
+      border: none;
+      padding: 0;
+    }
+    .news-media {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .news-media img {
+      width: 100%;
+      max-width: 520px;
+      height: auto;
+      border-radius: 10px;
+      display: block;
+    }
+    .news p { margin: 0 0 10px; }
+    .news-links {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+    .news-links li { margin: 2px 0; }
+    .news-links a { font-size: 14px; }
+  </style>
 </Base>
