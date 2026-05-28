@@ -104,7 +104,7 @@ const alumni = [
   <div class="people-grid">
     {team.map((p) => (
       <div class="person">
-        <img class="avatar" src={`${base}people/${slug(p.name)}.jpg`} alt={p.name} loading="lazy" />
+        <img class="avatar" src={`${base}people/${slug(p.name)}.jpg?v=2`} alt={p.name} loading="lazy" />
         <div class="person-name">{p.name}</div>
         <p class="person-body">{p.body}</p>
       </div>
@@ -115,7 +115,7 @@ const alumni = [
   <div class="people-grid">
     {alumni.map((p) => (
       <div class="person">
-        <img class="avatar" src={`${base}people/${slug(p.name)}.jpg`} alt={p.name} loading="lazy" />
+        <img class="avatar" src={`${base}people/${slug(p.name)}.jpg?v=2`} alt={p.name} loading="lazy" />
         <div class="person-name">{p.name}</div>
         <p class="person-body">{p.body}</p>
       </div>
