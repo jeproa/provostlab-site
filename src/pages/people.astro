@@ -1,167 +1,130 @@
 ---
 import Base from '../layouts/Base.astro';
 
-const currentGroups = [
+const team = [
   {
-    title: 'Principal Investigator',
-    people: [
-      {
-        name: 'Jean Provost, Ph.D., ing.',
-        role: 'Professor',
-        note: 'Member of the Montreal Heart Institute, the UdeM/Polytechnique Biomedical Engineering Institute, IVADO, and TransMedTech.',
-      },
-    ],
+    name: 'Jean Provost, Ph.D., ing.',
+    body: 'Professor, Department of Engineering Physics. FRQS Research Scholar. IVADO Professor. Member of the Montreal Heart Institute, the UdeM/Poly Biomedical Engineering Institute, IVADO, TransMedTech, the CIHR College of Reviewers, IEEE (Senior), and the Verasonics Scientific Advisory Board. Professor at Polytechnique Montréal since 2018; teaches GBM3805 Physique Moderne pour le Génie Biomédical and PHS3910 Techniques Expérimentales.',
   },
   {
-    title: 'Research Staff',
-    people: [
-      { name: 'Jonathan Porée, Ph.D.', role: 'Research Associate', note: 'Heads the TransMedTech mobile ultrasound imaging platform; myocardial ultrasound localization angiography.' },
-      { name: 'Stephen A. Lee, Ph.D.', role: 'Postdoctoral Scientist', note: 'Simulations and single-capillary reporters for neurovascular processes.' },
-      { name: 'Nin Ghigo, Ph.D.', role: 'Postdoctoral Scientist', note: 'Pulsatility imaging; industrial and governmental collaborations.' },
-    ],
+    name: 'Jonathan Porée, Ph.D.',
+    body: 'Research Associate, Head of our TransMedTech mobile ultrasound imaging and therapy platform. The platform offers on-site development and deployment of ultrafast ultrasound imaging and therapy tools, tailored to the specific needs of researchers and manufacturers. His research interests are broad but mainly focus at this time on the development of Myocardial Ultrasound Localization Angiography in the beating heart and Transcranial Ultrasound Localization Microscopy. Fellowships by IVADO, TransMedTech.',
   },
   {
-    title: 'PhD Candidates',
-    people: [
-      { name: 'Paul Xing', role: 'PhD Candidate', note: 'Transcranial imaging and aberration correction. NSERC, FRQ, TransMedTech.' },
-      { name: 'Oleksandra Gulenko', role: 'PhD Candidate', note: 'Brain vasculature changes from ultrasound therapies (co-supervised with Dr. Abbas Sadikot, McGill). FRQ, TransMedTech.' },
-      { name: 'Alice Wu', role: 'PhD Candidate', note: '3D Dynamic Ultrasound Localization Microscopy (co-supervised with Dr. Michaël Chassé, CHUM). FRQ, TransMedTech.' },
-      { name: 'Alexis Leconte', role: 'PhD Candidate', note: 'Ultrasound Localization Microscopy for myocardial imaging (co-supervised with Dr. Jean-Claude Tardif, MHI). FRQ, TransMedTech.' },
-    ],
+    name: 'Stephen A. Lee, Ph.D.',
+    body: 'Postdoctoral Scientist. Main research interests include simulations and single capillary reporters, and how they can be used to enhance our understanding of neurovascular processes in neurodegeneration and stroke.',
   },
   {
-    title: 'Interns',
-    people: [
-      { name: 'Cai Jie', note: '4D spatiotemporal tracking. NSERC.' },
-      { name: 'Marco Pontrelli', note: 'Aberration correction in transmit. NSERC.' },
-      { name: 'Malo Rossetto', note: 'Track-based graph representation of brain vasculature.' },
-      { name: 'Ludovic Goetz', note: 'Voxel-wise speed-of-sound correction for row-column array probes.' },
-      { name: 'Maxence Laplante-Berthier', note: 'Validation of ULM maps against simulations. NSERC, UPIR.' },
-      { name: 'Valentin Jourdan', note: 'Automatic labelling of ULM vasculature.' },
-      { name: 'Naomi Babii', note: 'Validation of ULM maps against histology. NSERC, UPIR, FRQ.' },
-    ],
+    name: 'Nin Ghigo, Ph.D.',
+    body: 'Postdoctoral Scientist. Main research interests include pulsatility imaging and industrial/governmental collaborations.',
   },
   {
-    title: 'Collaborators',
-    people: [
-      { name: 'David Bracco, MD, Ph.D.', note: 'High-frequency imaging of heart intramyocardial vasculature.' },
-    ],
-  },
-];
-
-const alumniGroups = [
-  {
-    title: 'Postdoctoral Researchers',
-    people: [
-      { name: 'Vincent Perrot, Ph.D.', note: 'Postdoctoral scientist, 2020–2022. Now Senior Research Scientist at DarkVision.' },
-    ],
+    name: 'Paul Xing',
+    body: 'Ph.D. Candidate. Main research interests include transcranial imaging and aberration correction. Scholarships by NSERC, FRQ, TransMedTech.',
   },
   {
-    title: 'PhD',
-    people: [
-      { name: 'Brice Rauby, Ph.D.', note: 'Deep learning for 3D ULM; member of Mila. IVADO, FRQ, TransMedTech. Now at SoundBlade Medical.' },
-      { name: 'Chloé Bourquin, Ph.D.', note: "The lab's first PhD student. FRQ, TransMedTech. Now Journalist at La Presse." },
-    ],
+    name: 'Oleksandra Gulenko',
+    body: 'Ph.D. Candidate, jointly supervised by Prof. Jean Provost and Dr. Abbas Sadikot (McGill). Her research aims to investigate changes in brain vasculature associated with ultrasound-based brain therapies, such as blood–brain barrier opening. Scholarships by FRQ, TransMedTech.',
   },
   {
-    title: 'M.Sc.A.',
-    people: [
-      { name: 'Samuel Desmarais', note: 'Now PhD candidate at TU Delft.' },
-      { name: 'Olivier Caron', note: "Now Chargé d'étude at Atelier 7Hz." },
-      { name: 'Hatim Belgharbi', note: 'Now PhD candidate at UNC Chapel Hill.' },
-      { name: 'Michael Mougharbel', note: 'Now QA engineer at the Montreal Heart Institute.' },
-      { name: 'Simon Blais', note: 'Now Concepteur Mécanique at CLEIO.' },
-      { name: 'Erwan Hardy', note: 'Now R&D engineer at Quantel Medical.' },
-      { name: 'Philippe Cormier', note: 'Now R&D engineer at Puzzle Medical.' },
-    ],
+    name: 'Alice Wu',
+    body: 'Ph.D. Candidate, jointly supervised by Prof. Jean Provost and Dr. Michaël Chassé (CHUM). Her research focuses on developing Dynamic Ultrasound Localization Microscopy (DULM) for brain imaging in 3D, with the goal of studying cerebral hemodynamics throughout the cardiac cycle. Scholarships by FRQ, TransMedTech.',
+  },
+  {
+    name: 'Alexis Leconte',
+    body: 'Ph.D. Candidate, jointly supervised by Prof. Jean Provost and Dr. Jean-Claude Tardif (Montreal Heart Institute). His research focuses on developing Ultrasound Localization Microscopy (ULM) for imaging the myocardium, aiming to visualize and quantify microvascular blood flow in the beating heart wall. Scholarships by FRQ, TransMedTech.',
+  },
+  {
+    name: 'Cai Jie',
+    body: 'Intern. Works toward the development of 4D spatiotemporal tracking. Scholarship from NSERC.',
+  },
+  {
+    name: 'Marco Pontrelli',
+    body: 'Intern. Works toward the development of aberration correction in transmit. Scholarship from NSERC.',
+  },
+  {
+    name: 'Malo Rossetto',
+    body: 'Intern. Works toward track-based graph representation of the entire brain vasculature.',
+  },
+  {
+    name: 'Ludovic Goetz',
+    body: 'Intern. Works toward voxel-wise speed-of-sound correction when imaging using a row-column array probe.',
+  },
+  {
+    name: 'David Bracco, MD',
+    body: 'Collaborator. Works toward high-frequency imaging of the heart intramyocardial vasculature.',
   },
 ];
 
-const formerInterns = [
-  { year: '2024', names: 'Simon Desrochers, Pierre-Olivier Bouchard, Louis Caron, Emma Gauvreau, Théodore Brierre' },
-  { year: '2023', names: 'Michael Mayerhofer (2022–2024), Baptiste Didier, Jean Ropert' },
-  { year: '2022', names: 'Tim Whittaker, Aurélie Roseberry, Juliette Reydet, Léo Milecki (visiting scientist)' },
-  { year: '2021', names: 'David Arsenault-Belley, Yangou Dou, Julie Lanthier, Thomas Ricard, Tom Quelin, William Beaulieu (2020–2021)' },
-  { year: '2020', names: 'Élodie Labrecque Langlais, Jacynthe Francoeur (2019–2020), Jean-François Martin (2019–2020)' },
-  { year: '2019', names: 'Arthur Le Ber, Léo Milecki' },
+const alumni = [
+  { name: 'Vincent Perrot, Ph.D.', body: 'Postdoctoral Scientist, 2020–2022. Now Senior Research Scientist at DarkVision.' },
+  { name: 'Chloé Bourquin, Ph.D.', body: "Provostlab's (first!) Ph.D. student. Scholarships by FRQ, TransMedTech. Now Journalist at La Presse." },
+  { name: 'Brice Rauby, Ph.D.', body: 'Member of MILA, jointly supervised by Prof. Jean Provost and Dr. Maxime Gasse (MILA). His research investigated novel deep learning–based methods for Ultrasound Localization Microscopy (ULM), with particular emphasis on three-dimensional extension and in vivo applicability. Scholarships by IVADO, FRQ, TransMedTech. Now at SoundBlade Medical.' },
+  { name: 'Samuel Desmarais, M.Sc.A.', body: 'Thesis Masters 2021–2023; Intern 2019–2021. Now Ph.D. Candidate at TU Delft.' },
+  { name: 'Olivier Caron, M.Sc.A.', body: "Thesis Masters 2021–2023; Intern 2020–2021. Now Chargé d'étude at Atelier 7Hz." },
+  { name: 'Hatim Belgharbi, M.Sc.A.', body: 'Thesis Masters 2020–2021; Intern 2018–2019. Now Ph.D. Candidate at UNC Chapel Hill.' },
+  { name: 'Michael Mougharbel, M.Sc.A.', body: 'Thesis Masters 2021–2023. Now QA engineer at the Montreal Heart Institute.' },
+  { name: 'Simon Blais, M.Sc.A.', body: 'Thesis Masters 2019–2020. Now Concepteur Mécanique at CLEIO.' },
+  { name: 'Erwan Hardy, M.Sc.A.', body: 'Thesis Masters 2019–2020. Now R&D engineer at Quantel Medical.' },
+  { name: 'Philippe Cormier, M.Sc.A.', body: 'Thesis Masters 2019–2020. Now R&D engineer at Puzzle Medical.' },
+  { name: 'Simon Desrochers', body: 'Intern 2024.' },
+  { name: 'Pierre-Olivier Bouchard', body: 'Intern 2024.' },
+  { name: 'Louis Caron', body: 'Intern 2024.' },
+  { name: 'Emma Gauvreau', body: 'Intern 2024.' },
+  { name: 'Théodore Brierre', body: 'Intern 2024.' },
+  { name: 'Michael Mayerhofer', body: 'Intern 2022–2024.' },
+  { name: 'Baptiste Didier', body: 'Intern 2023.' },
+  { name: 'Jean Ropert', body: 'Intern 2023.' },
+  { name: 'Tim Whittaker', body: 'Intern 2022.' },
+  { name: 'Aurélie Roseberry', body: 'Intern 2022.' },
+  { name: 'Juliette Reydet', body: 'Intern 2022.' },
+  { name: 'Léo Milecki', body: 'Intern 2019; Visiting Scientist 2022.' },
+  { name: 'David Arsenault-Belley', body: 'Intern 2021.' },
+  { name: 'Yangou Dou', body: 'Intern 2021.' },
+  { name: 'Julie Lanthier', body: 'Intern 2021.' },
+  { name: 'Thomas Ricard', body: 'Intern 2021.' },
+  { name: 'Tom Quelin', body: 'Intern 2021.' },
+  { name: 'Jacynthe Francoeur', body: 'Intern 2019–2020.' },
+  { name: 'Élodie Labrecque Langlais', body: 'Intern 2020.' },
+  { name: 'Jean-François Martin', body: 'Intern 2019–2020.' },
+  { name: 'William Beaulieu', body: 'Intern 2020–2021.' },
+  { name: 'Arthur Le Ber', body: 'Intern 2019.' },
+  { name: 'Maxence Laplante-Berthier', body: 'Intern (2025–2026). Worked toward validation of ultrasound localization microscopy maps against simulations. Scholarships from NSERC, UPIR.' },
+  { name: 'Valentin Jourdan', body: 'Intern (2025–2026). Worked toward the automatic labelling of ultrasound localization microscopy vasculature.' },
+  { name: 'Naomi Babii', body: 'Intern (2025–2026). Worked toward validation of ultrasound localization microscopy maps against histology. Scholarships from NSERC, UPIR, FRQ.' },
 ];
 ---
 <Base title="People — Provost Ultrasound Lab">
   <h1>People</h1>
 
-  <h2>Current Members</h2>
-  {currentGroups.map((group) => (
-    <section class="group">
-      <h3>{group.title}</h3>
-      <ul class="people">
-        {group.people.map((p) => (
-          <li class="person">
-            <span class="person-name">{p.name}</span>
-            {p.role && <span class="person-role">{p.role}</span>}
-            {p.note && <span class="person-note">{p.note}</span>}
-          </li>
-        ))}
-      </ul>
-    </section>
+  <h2>Team</h2>
+  {team.map((p) => (
+    <div class="person">
+      <div class="person-name">{p.name}</div>
+      <p class="person-body">{p.body}</p>
+    </div>
   ))}
 
   <h2>Alumni</h2>
-  {alumniGroups.map((group) => (
-    <section class="group">
-      <h3>{group.title}</h3>
-      <ul class="people">
-        {group.people.map((p) => (
-          <li class="person">
-            <span class="person-name">{p.name}</span>
-            {p.note && <span class="person-note">{p.note}</span>}
-          </li>
-        ))}
-      </ul>
-    </section>
+  {alumni.map((p) => (
+    <div class="person">
+      <div class="person-name">{p.name}</div>
+      <p class="person-body">{p.body}</p>
+    </div>
   ))}
 
-  <section class="group">
-    <h3>Former Interns</h3>
-    <ul class="years">
-      {formerInterns.map((y) => (
-        <li><span class="year">{y.year}</span> {y.names}</li>
-      ))}
-    </ul>
-  </section>
-
   <style>
-    .group { margin-bottom: 28px; }
-    h3 {
-      font-size: 15px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--accent);
+    h2 {
+      color: var(--accent-dark);
       border-bottom: 1px solid var(--line);
       padding-bottom: 6px;
-      margin-bottom: 14px;
     }
-    .people {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px 28px;
-    }
-    @media (max-width: 640px) {
-      .people { grid-template-columns: 1fr; }
-    }
-    .person { display: flex; flex-direction: column; }
+    .person { margin-bottom: 16px; }
     .person-name { font-weight: 600; }
-    .person-role { font-size: 13px; color: var(--accent); }
-    .person-note { font-size: 14px; color: var(--muted); }
-    .years { list-style: none; padding: 0; margin: 0; }
-    .years li { margin-bottom: 8px; color: var(--muted); font-size: 14px; }
-    .year {
-      display: inline-block;
-      min-width: 44px;
-      font-weight: 600;
-      color: var(--ink);
+    .person-body {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 15px;
     }
   </style>
 </Base>
