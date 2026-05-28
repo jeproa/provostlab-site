@@ -1,5 +1,5 @@
 ---
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '') + '/';
 const { title = 'Provost Ultrasound Lab', lang = 'en' } = Astro.props;
 
 const nav = [
