@@ -1,7 +1,85 @@
 ---
 import Base from '../layouts/Base.astro';
+import publications from '../data/publications.json';
+
+const linkify = (s) =>
+  s.replace(/(https?:\/\/[^\s<>"]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
 ---
 <Base title="Publications — Provost Ultrasound Lab">
   <h1>Publications</h1>
-  <p><em>Publications list to be folded in (replacing the Apps Script widget).</em></p>
+
+  <h2>Peer-reviewed and Preprints</h2>
+  <p>
+    For a complete list, see
+    <a href="https://scholar.google.com/citations?user=3ga4SSoAAAAJ&hl=en" target="_blank" rel="noopener">J. Provost’s Google Scholar page</a>.
+    Nearly all of our peer-reviewed publications are also available as preprints on public servers and on this website:
+  </p>
+
+  {publications.map((group) => (
+    <section class="year-section">
+      <h3 class="year-header">{group.year}</h3>
+      {group.items.map((it) => (
+        <article class="pub">
+          <a class="pub-title" href={it.url} target="_blank" rel="noopener">{it.name}</a>
+          <p class="pub-cite" set:html={linkify(it.description)} />
+        </article>
+      ))}
+    </section>
+  ))}
+
+  <style>
+    h1 {
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 28px;
+      margin-bottom: 0;
+    }
+    h1::after {
+      content: '';
+      display: block;
+      width: 60%;
+      max-width: 280px;
+      height: 3px;
+      background: var(--accent);
+      margin: 8px auto 0;
+    }
+    h2 {
+      font-size: 22px;
+      color: var(--accent-dark);
+      border: none;
+      padding: 0;
+      margin: 36px 0 8px;
+    }
+    .year-section { margin-top: 32px; }
+    .year-header {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink);
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+    .pub { margin: 0 0 18px; }
+    .pub-title {
+      display: block;
+      color: var(--accent);
+      font-weight: 500;
+      text-decoration: none;
+      font-size: 16px;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .pub-title:hover { text-decoration: underline; }
+    .pub-cite {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .pub-cite a {
+      color: var(--accent);
+      word-break: break-all;
+    }
+  </style>
 </Base>

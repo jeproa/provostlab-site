@@ -1,0 +1,142 @@
+[
+  {
+    "year": "Upcoming",
+    "items": [
+      {
+        "name": "Automatic Aberration Correction for Transcranial Functional and Super-Resolution Ultrasound Imaging in Rodents and Nonhuman Primates",
+        "url": "https://drive.google.com/file/d/1KpSnQ5ZxxdUyIMCmqH6UFYG-rQVK3259/view?usp=drivesdk",
+        "description": "Xing, P., Malescot, A., Martineau, E., Quessy, S., Rungta, R. L., Dancause, N., &amp; Provost, J. (2026). <i>Automatic Aberration Correction for Transcranial Functional and Super-Resolution Ultrasound Imaging in Rodents and Nonhuman Primates</i> (Version 2). arXiv. https://doi.org/10.48550/ARXIV.2605.01538"
+      },
+      {
+        "name": "The-Bodega A Matlab Toolbox for Biologically Dynamic Microbubble Simulations on Realistic Hemodynamic Microvascular Graphs",
+        "url": "https://drive.google.com/file/d/1PO3FFypNRxJ8okUtRzEdpZ3Wn9JzAUG7/view?usp=drivesdk",
+        "description": "Lee, S. A., Leconte, A., Wu, A., Poree, J., Laplante-Berthier, M., Desrocher, S., Bouchard, P.-O., Kinugasa, J., Mihelic, S., Linninger, A., &amp; Provost, J. (2025). <i>The-Bodega: A Matlab Toolbox for Biologically Dynamic Microbubble Simulations on Realistic Hemodynamic Microvascular Graphs</i> (Version 1). arXiv. https://doi.org/10.48550/ARXIV.2509.08149"
+      }
+    ]
+  },
+  {
+    "year": "2026",
+    "items": [
+      {
+        "name": "3D transcranial Dynamic Ultrasound Localization Microscopy in the mouse brain using a  Row-Column Array",
+        "url": "https://drive.google.com/file/d/12ausFvbfBVLAgVjnF_t89KLdi6qIaTVo/view?usp=drivesdk",
+        "description": "Wu, A., Porée, J., Ramos-Palacios, G., Ghigo, N., Bourquin, C., Leconte, A., Xing, P., Sadikot, A. F., Chassé, M., & Provost, J. (2026). 3D Transcranial Dynamic Ultrasound Localization Microscopy in the Mouse Brain Using a Row-Column Array. IEEE Transactions on Biomedical Engineering, 73(3), 1112–1123. https://doi.org/10.1109/tbme.2025.3598693"
+      },
+      {
+        "name": "Functional Assessment of Cerebral Capillaries using Single Capillary Reporters in Ultrasound Localization Microscopy",
+        "url": "https://drive.google.com/file/d/1Xras8FoOVnbuOo7kF7BzJMZ7TBsUsrYw/view?usp=drivesdk",
+        "description": "Lee, S. A., Leconte, A., Wu, A., Kinugasa, J., Palacios, G. R., Porée, J., Sadikot, A. F., Linninger, A., & Provost, J. (2026). Assessing cerebral capillary function and stalling using single capillary reporters in ultrasound localization microscopy. Proceedings of the National Academy of Sciences, 123(2). https://doi.org/10.1073/pnas.2509564123"
+      }
+    ]
+  },
+  {
+    "year": "2025",
+    "items": [
+      {
+        "name": "3D ultrasound localization microscopy of the nonhuman primate brain",
+        "url": "https://drive.google.com/file/d/1cmZwOK203SNSgB8jLbGM0OD9TbU0pSMs/view?usp=drivesdk",
+        "description": "Xing, P., Perrot, V., Dominguez-Vargas, A. U., Porée, J., Quessy, S., Dancause, N., & Provost, J. (2025). 3D ultrasound localization microscopy of the nonhuman primate brain. eBioMedicine, 111, 105457. https://doi.org/10.1016/j.ebiom.2024.105457"
+      },
+      {
+        "name": "A Tracking prior to Localization workflow for Ultrasound Localization Microscopy",
+        "url": "https://drive.google.com/file/d/14hdyXgYXQjizrTKj-SNzlnPwyhdN74ZP/view?usp=drivesdk",
+        "description": "Leconte, A., Porée, J., Rauby, B., Wu, A., Ghigo, N., Xing, P., Lee, S., Bourquin, C., Ramos-Palacios, G., Sadikot, A. F., & Provost, J. (2025). A Tracking Prior to Localization Workflow for Ultrasound Localization Microscopy. IEEE Transactions on Medical Imaging, 44(2), 698–710. https://doi.org/10.1109/tmi.2024.3456676"
+      },
+      {
+        "name": "Inverse Problem Approach to Aberration Correction for in vivo Transcranial Imaging Based on a Sparse Representation of Contrast-enhanced Ultrasound Data",
+        "url": "https://drive.google.com/file/d/19J_XvTFNl57jfmEAg8iKTH9nM4pQYgst/view?usp=drivesdk",
+        "description": "Xing, P., Malescot, A., Martineau, E., Rungta, R. L., & Provost, J. (2025). Inverse Problem Approach to Aberration Correction for In Vivo Transcranial Imaging Based on a Sparse Representation of Contrast-Enhanced Ultrasound Data. IEEE Transactions on Biomedical Engineering, 72(11), 3196–3209. https://doi.org/10.1109/tbme.2025.3564473"
+      },
+      {
+        "name": "Pruning Sparse Tensor Neural Networks",
+        "url": "https://drive.google.com/file/d/1wRRMj3aWcOwMIvtZaxFz09954iY0RJHQ/view?usp=drivesdk",
+        "description": "Rauby, B., Xing, P., Porée, J., Gasse, M., & Provost, J. (2025). Pruning Sparse Tensor Neural Networks Enables Deep Learning for 3D Ultrasound Localization Microscopy. IEEE Transactions on Image Processing, 34, 2367–2378. https://doi.org/10.1109/tip.2025.3552198"
+      }
+    ]
+  },
+  {
+    "year": "2024",
+    "items": [
+      {
+        "name": "A Unified Framework Combining Doppler-Based Motion Compensation, Harmonic Imaging, and Angular Coherence for High-Quality B-Mode in Ultrafast Echocardiography",
+        "url": "https://drive.google.com/file/d/1kwZkF9tJqvkTuPxF6GTAwOO6xbk-VP9j/view?usp=drivesdk",
+        "description": "Mougharbel, M., Porée, J., Lee, S. A., Xing, P., Wu, A., Tardif, J.-C., & Provost, J. (2025). A Unified Framework Combining Doppler-Based Motion Compensation, Harmonic Imaging, and Angular Coherence for High-Quality B-Mode in Ultrafast Echocardiography. IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, 72(1), 141–152. https://doi.org/10.1109/tuffc.2024.3505060"
+      },
+      {
+        "name": "Boosting Cardiac Color Doppler Frame Rates  with Deep Learning",
+        "url": "https://drive.google.com/file/d/1cjt19Y74xwmGvPBRFApKI3ikgi9veEpr/view?usp=drivesdk",
+        "description": "Puig, J., Friboulet, D., Jung Ling, H., Varray, F., Mougharbel, M., Porée, J., Provost, J., Garcia, D., & Millioz, F. (2024). Boosting Cardiac Color Doppler Frame Rates With Deep Learning. IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, 71(11), 1540–1551. https://doi.org/10.1109/tuffc.2024.3424549"
+      },
+      {
+        "name": "Deep Learning In Ultrasound Localization Microscopy",
+        "url": "https://drive.google.com/file/d/1ywqMY8MeGyIAs59vbpmytS3Ilg8uk1OA/view?usp=drivesdk",
+        "description": "Rauby, B., Xing, P., Gasse, M., & Provost, J. (2024). Deep Learning in Ultrasound Localization Microscopy: Applications and Perspectives. IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, 71(12: Breaking the Resolution), 1765–1784. https://doi.org/10.1109/tuffc.2024.3462299"
+      },
+      {
+        "name": "Dynamic Ultrasound Localization Microscopy Without ECG-Gating",
+        "url": "https://drive.google.com/file/d/1x716qfvWJwcOVwm2dJJbFfShJAPoDRdY/view?usp=drivesdk",
+        "description": "Ghigo, N., Ramos-Palacios, G., Bourquin, C., Xing, P., Wu, A., Cortés, N., Ladret, H., Ikan, L., Casanova, C., Porée, J., Sadikot, A., & Provost, J. (2024). Dynamic Ultrasound Localization Microscopy Without ECG-Gating. Ultrasound in Medicine &Amp; Biology, 50(9), 1436–1448. https://doi.org/10.1016/j.ultrasmedbio.2024.05.023"
+      },
+      {
+        "name": "Equivalent-time-active-cavitation-imaging enables vascularresolution blood-brain-barrier-opening-therapy planning",
+        "url": "https://drive.google.com/file/d/1HDFYCf2S4mea2upI1DiwfAzblpsulkcM/view?usp=drivesdk",
+        "description": "Desmarais, S., Ramos-Palacios, G., Porée, J., Lee, S. A., Leconte, A., Sadikot, A. F., & Provost, J. (2024). Equivalent-time-active-cavitation-imaging enables vascular-resolution blood-brain-barrier-opening-therapy planning. Physics in Medicine &Amp; Biology, 69(5), 55014. https://doi.org/10.1088/1361-6560/ad199a"
+      },
+      {
+        "name": "Phase Aberration Correction for in vivo Ultrasound Localization Microscopy Using a Spatiotemporal  Complex-Valued Neural Network",
+        "url": "https://drive.google.com/file/d/1eteAAhqNGMltopSQLyEqaRf-xmXrHufH/view?usp=drivesdk",
+        "description": "Xing, P., Porée, J., Rauby, B., Malescot, A., Martineau, E., Perrot, V., Rungta, R. L., & Provost, J. (2024). Phase Aberration Correction for In Vivo Ultrasound Localization Microscopy Using a Spatiotemporal Complex-Valued Neural Network. IEEE Transactions on Medical Imaging, 43(2), 662–673. https://doi.org/10.1109/tmi.2023.3316995"
+      },
+      {
+        "name": "Quantitative pulsatility measurements using 3D dynamic ultrasound localization microscopy",
+        "url": "https://drive.google.com/file/d/1yAiiLTWkX4757gE4Gf-fIormC8YAGyAX/view?usp=drivesdk",
+        "description": "Bourquin, C., Porée, J., Rauby, B., Perrot, V., Ghigo, N., Belgharbi, H., Bélanger, S., Ramos-Palacios, G., Cortes, N., Ladret, H., Ikan, L., Casanova, C., Lesage, F., & Provost, J. (2024). Quantitative pulsatility measurements using 3D dynamic ultrasound localization microscopy. Physics in Medicine &Amp; Biology, 69(4), 45017. https://doi.org/10.1088/1361-6560/ad1b68"
+      }
+    ]
+  },
+  {
+    "year": "2023",
+    "items": [
+      {
+        "name": "An Anatomically Realistic Simulation Framework for 3D Ultrasound Localization Microscopy",
+        "url": "https://drive.google.com/file/d/1zOJW3reu_q2FfuJl6P2YMRqTuDVy_FCi/view?usp=drivesdk",
+        "description": "Belgharbi, H., Porée, J., Damseh, R., Perrot, V., Milecki, L., Delafontaine-Martel, P., Lesage, F., & Provost, J. (2023). An Anatomically Realistic Simulation Framework for 3D Ultrasound Localization Microscopy. IEEE Open Journal of Ultrasonics, Ferroelectrics, and Frequency Control, 3, 1–13. https://doi.org/10.1109/ojuffc.2023.3235766"
+      }
+    ]
+  },
+  {
+    "year": "2022",
+    "items": [
+      {
+        "name": "In Vivo Pulsatility Measurement of Cerebral Microcirculation in Rodents Using Dynamic Ultrasound Localization Microscopy",
+        "url": "https://drive.google.com/file/d/1LDA9J8CTYM13MWKdxbpddMcGK8853Pnn/view?usp=drivesdk",
+        "description": "Bourquin, C., Poree, J., Lesage, F., & Provost, J. (2022). In Vivo Pulsatility Measurement of Cerebral Microcirculation in Rodents Using Dynamic Ultrasound Localization Microscopy. IEEE Transactions on Medical Imaging, 41(4), 782–792. https://doi.org/10.1109/tmi.2021.3123912"
+      }
+    ]
+  },
+  {
+    "year": "2021",
+    "items": [
+      {
+        "name": "Deep Learning Framework for Spatiotemporal  Ultrasound Localization Microscopy",
+        "url": "https://drive.google.com/file/d/1QK_RgSreruPp5WR8F7PhIGn6R7aChxWS/view?usp=drivesdk",
+        "description": "Milecki, L., Poree, J., Belgharbi, H., Bourquin, C., Damseh, R., Delafontaine-Martel, P., Lesage, F., Gasse, M., & Provost, J. (2021). A Deep Learning Framework for Spatiotemporal Ultrasound Localization Microscopy. IEEE Transactions on Medical Imaging, 40(5), 1428–1437. https://doi.org/10.1109/tmi.2021.3056951"
+      },
+      {
+        "name": "Dynamic Myocardial Ultrasound Localization Angiography",
+        "url": "https://drive.google.com/file/d/1bR6s5XN2FNMblwFdcM9AzvmJDocMXgh5/view?usp=drivesdk",
+        "description": "Cormier, P., Poree, J., Bourquin, C., & Provost, J. (2021). Dynamic Myocardial Ultrasound Localization Angiography. IEEE Transactions on Medical Imaging, 40(12), 3379–3388. https://doi.org/10.1109/tmi.2021.3086115"
+      },
+      {
+        "name": "Equivalent Time Active Cavitation Imaging",
+        "url": "https://drive.google.com/file/d/1qWEe85XPIWPmpULDDfvuOTA5Oeeh3OsQ/view?usp=drivesdk",
+        "description": "Blais, S., Porée, J., Ramos-Palacios, G., Desmarais, S., Perrot, V., F Sadikot, A., & Provost, J. (2021). Equivalent time active cavitation imaging. Physics in Medicine &Amp; Biology, 66(19), 195010. https://doi.org/10.1088/1361-6560/ac1877"
+      },
+      {
+        "name": "Sparse channel sampling for ultrasound localization microscopy",
+        "url": "https://drive.google.com/file/d/1QS-0cAmOvbpKXoG2bNEjhx0aBdF98c6m/view?usp=drivesdk",
+        "description": "Hardy, E., Porée, J., Belgharbi, H., Bourquin, C., Lesage, F., & Provost, J. (2021). Sparse channel sampling for ultrasound localization microscopy (SPARSE-ULM). Physics in Medicine &Amp; Biology, 66(9), 95008. https://doi.org/10.1088/1361-6560/abf1b6"
+      }
+    ]
+  }
+]
