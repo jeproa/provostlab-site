@@ -1,7 +1,107 @@
 ---
 import Base from '../../layouts/Base.astro';
+import repos from '../../data/github_repos.json';
+
+const ORG_URL = 'https://github.com/provostultrasoundlab';
+
+// Sort: descriptive repos (non-empty description) first by recent push,
+// then the rest by recent push.
+const enrich = repos.map((r) => ({ ...r, _date: new Date(r.pushed_at) }));
+const documented = enrich.filter((r) => r.description && r.description.trim()).sort((a, b) => b._date - a._date);
+const others = enrich.filter((r) => !r.description || !r.description.trim()).sort((a, b) => b._date - a._date);
+const sorted = [...documented, ...others];
+
+const fmtDate = (d) => {
+  const m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${m[d.getMonth()]} ${d.getFullYear()}`;
+};
 ---
 <Base title="Codes — Provost Ultrasound Lab">
   <h1>Codes</h1>
-  <p><em>Content to be ported from the current site.</em></p>
+
+  <p class="lead">
+    Our code is open-source on GitHub at <a href={ORG_URL} target="_blank" rel="noopener">@provostultrasoundlab</a>.
+    A snapshot of the {repos.length} public repositories is shown below, with documented ones first.
+  </p>
+
+  <div class="repos-grid">
+    {sorted.map((r) => (
+      <a class="repo-card" href={r.html_url} target="_blank" rel="noopener">
+        <div class="repo-name">{r.name}</div>
+        <p class="repo-desc">{r.description || ''}</p>
+        <div class="repo-meta">
+          {r.language && <span class="lang">{r.language}</span>}
+          {r.stargazers_count > 0 && <span>★ {r.stargazers_count}</span>}
+          <span>Updated {fmtDate(r._date)}</span>
+        </div>
+      </a>
+    ))}
+  </div>
+
+  <style>
+    h1 {
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 28px;
+      margin-bottom: 0;
+    }
+    h1::after {
+      content: '';
+      display: block;
+      width: 60%;
+      max-width: 280px;
+      height: 3px;
+      background: var(--accent);
+      margin: 8px auto 0;
+    }
+    .lead {
+      max-width: 720px;
+      margin: 28px auto 32px;
+      text-align: center;
+      color: var(--muted);
+    }
+    .lead a { color: var(--accent); }
+    .repos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .repo-card {
+      display: block;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--ink);
+      transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+      background: #fff;
+    }
+    .repo-card:hover {
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .repo-name {
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+    .repo-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 0 0 12px;
+      min-height: 42px;
+    }
+    .repo-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .repo-meta .lang { font-weight: 500; color: var(--ink); }
+  </style>
 </Base>
