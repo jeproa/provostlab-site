@@ -11,6 +11,7 @@ const nav = [
   { href: 'publications/videos', label: 'Videos' },
   { href: 'join', label: 'Join our Team' },
   { href: 'fr', label: 'Français' },
+  { href: 'tetris', label: 'Tetris', newTab: true },
 ];
 
 const link = (h) => (h ? `${base}${h}` : base);
@@ -36,7 +37,12 @@ const isActive = (h) => here === link(h).replace(/\/$/, '');
       <a class="brand" href={link('')}>Provost Ultrasound Lab</a>
       <nav class="site-nav">
         {nav.map((item) => (
-          <a href={link(item.href)} class={isActive(item.href) ? 'active' : ''}>
+          <a
+            href={link(item.href)}
+            class={isActive(item.href) ? 'active' : ''}
+            target={item.newTab ? '_blank' : undefined}
+            rel={item.newTab ? 'noopener' : undefined}
+          >
             {item.label}
           </a>
         ))}
