@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '') + '/';
 const gifs = new Set(['news-03', 'news-16']);
-const versions = new Map([['paul-arxiv-2026', 3]]);
+const versions = new Map([['paul-arxiv-2026', 4]]);
 const img = (n) => {
   const ext = gifs.has(n) ? 'gif' : 'jpg';
   const v = versions.get(n);
@@ -73,6 +73,16 @@ const news = [
       'We were happy to present our work at IUS this year! Jonathan and Paul showed how weak and strong aberrations caused by the skull could be corrected for in a practical, repeatable manner.',
       'Alice and Stephen presented how long ensemble processing could enable better pulse wave velocity measurements and vessel labelling. Oleksandra presented her novel high-frequency theragnostic approach for BBB opening and monitoring using dynamic ULM. Nin revealed our soon-to-be-released giant dataset of in vivo mouse brain acquisitions, which Brice leveraged to demonstrate the benefits of using in vivo data to develop deep-learning reconstruction strategies. Finally, Alexis described his realistic simulation framework to improve cardiac dynamic ULM in humans. Stay tuned for the associated publications!',
     ],
+  },
+  {
+    date: 'September 12th, 2025',
+    title: 'New preprint: The-Bodega — A Matlab Toolbox for Biologically Dynamic Microbubble Simulations on Realistic Hemodynamic Microvascular Graphs',
+    headshot: 'stephen-a-lee',
+    images: ['bodega-arxiv-2025'],
+    body: [
+      'Stephen Lee and co-authors have released The-Bodega, an open-source MATLAB toolbox for simulating microbubble dynamics on anatomically realistic 3D microvascular graphs. It generates ground-truth datasets for developing and benchmarking ultrasound localization microscopy algorithms, with built-in vascular models spanning mouse brain to human heart and integration with existing simulators such as k-Wave and FULLWAVE.',
+    ],
+    links: [{ label: 'Preprint (arXiv)', url: 'https://doi.org/10.48550/ARXIV.2509.08149' }],
   },
   {
     date: 'September 10th, 2025',
