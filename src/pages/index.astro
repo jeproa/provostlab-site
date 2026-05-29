@@ -2,14 +2,15 @@
 import Base from '../layouts/Base.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '') + '/';
-const gifs = new Set(['news-03', 'news-16']);
+const gifs = new Set(['news-03', 'news-16', 'paul-arxiv-2026']);
 const img = (n) => `${base}news/${n}.${gifs.has(n) ? 'gif' : 'jpg'}`;
 
 const news = [
   {
     date: 'May 2026',
     title: 'New preprint: Automatic Aberration Correction for Transcranial Functional and Super-Resolution Ultrasound Imaging in Rodents and Nonhuman Primates',
-    images: ['paul-xing', 'paul-arxiv-2026'],
+    headshot: 'paul-xing',
+    images: ['paul-arxiv-2026'],
     body: [
       'Paul Xing and co-authors have a new preprint on arXiv presenting an automatic method for transcranial aberration correction, applied to both functional ultrasound and ultrasound localization microscopy in rodents and nonhuman primates.',
     ],
@@ -288,6 +289,9 @@ const news = [
 
   {news.map((e) => (
     <article class="news">
+      {e.headshot && (
+        <img class="byline-avatar" src={img(e.headshot)} alt="" loading="lazy" />
+      )}
       <div class="news-date">{e.date}</div>
       <h2 class="news-title">{e.title}</h2>
       {e.images && (
@@ -352,6 +356,14 @@ const news = [
       height: auto;
       border-radius: 10px;
       display: block;
+    }
+    .byline-avatar {
+      float: right;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 6px 0 10px 14px;
     }
     .embed {
       position: relative;
