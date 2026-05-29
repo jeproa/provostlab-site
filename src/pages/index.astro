@@ -7,10 +7,18 @@ const img = (n) => `${base}news/${n}.${gifs.has(n) ? 'gif' : 'jpg'}`;
 
 const news = [
   {
+    date: 'May 2026',
+    title: 'New preprint: Automatic Aberration Correction for Transcranial Functional and Super-Resolution Ultrasound Imaging in Rodents and Nonhuman Primates',
+    images: ['paul-xing', 'paul-arxiv-2026'],
+    body: [
+      'Paul Xing and co-authors have a new preprint on arXiv presenting an automatic method for transcranial aberration correction, applied to both functional ultrasound and ultrasound localization microscopy in rodents and nonhuman primates.',
+    ],
+    links: [{ label: 'Preprint (arXiv)', url: 'https://doi.org/10.48550/ARXIV.2605.01538' }],
+  },
+  {
     date: 'February 2026',
     title: 'Congrats to Brice Rauby, Ph.D.!',
     images: ['news-01'],
-    video: { type: 'drive', id: '1lirSlbPQ1l5-OVJ-RE459jaBto18Sm1v' },
     body: [
       'Brice has just brilliantly defended his doctoral thesis on applying deep learning to ultrasound localization microscopy (ULM). His work includes a comprehensive and insightful review of the field, as well as major contributions to leveraging sparse structures for 3D ULM reconstruction.',
       'Most notably, Brice worked toward the creation and public release of the largest in vivo ULM dataset to date. Building on this achievement, he developed the first deep-learning model trained directly on in vivo ULM data—a milestone that sets a new benchmark for the community and opens exciting research avenues.',
@@ -20,6 +28,7 @@ const news = [
   {
     date: 'January 2026',
     title: 'New paper in PNAS with coverage by the Canadian Press',
+    video: { type: 'drive', id: '1lirSlbPQ1l5-OVJ-RE459jaBto18Sm1v' },
     body: [
       'Excited to share that our paper was just published in The Proceedings of the National Academy of Sciences!',
       'It is now becoming clear that many neuropathologies are linked to microvascular changes in the brain. At the interface between the microvasculature and the neural system lie vast networks of capillaries that dynamically adapt to the brain’s energy demands. Yet, noninvasively visualizing and functionally assessing these vessels throughout the brain remains challenging.',
