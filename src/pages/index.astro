@@ -3,7 +3,12 @@ import Base from '../layouts/Base.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '') + '/';
 const gifs = new Set(['news-03', 'news-16', 'paul-arxiv-2026']);
-const img = (n) => `${base}news/${n}.${gifs.has(n) ? 'gif' : 'jpg'}`;
+const versions = new Map([['paul-arxiv-2026', 2]]);
+const img = (n) => {
+  const ext = gifs.has(n) ? 'gif' : 'jpg';
+  const v = versions.get(n);
+  return `${base}news/${n}.${ext}${v ? `?v=${v}` : ''}`;
+};
 
 const news = [
   {
