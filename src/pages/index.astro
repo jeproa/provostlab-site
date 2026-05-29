@@ -9,6 +9,7 @@ const news = [
     date: 'February 2026',
     title: 'Congrats to Brice Rauby, Ph.D.!',
     images: ['news-01'],
+    video: { type: 'drive', id: '1lirSlbPQ1l5-OVJ-RE459jaBto18Sm1v' },
     body: [
       'Brice has just brilliantly defended his doctoral thesis on applying deep learning to ultrasound localization microscopy (ULM). His work includes a comprehensive and insightful review of the field, as well as major contributions to leveraging sparse structures for 3D ULM reconstruction.',
       'Most notably, Brice worked toward the creation and public release of the largest in vivo ULM dataset to date. Building on this achievement, he developed the first deep-learning model trained directly on in vivo ULM data—a milestone that sets a new benchmark for the community and opens exciting research avenues.',
@@ -188,6 +189,14 @@ const news = [
     ],
   },
   {
+    date: 'April 20th, 2023',
+    title: 'We’re featured in a video from the Scilabus YouTube channel!',
+    video: { type: 'youtube', id: '5VxaoK36mCQ' },
+    body: [
+      'Viviane Lalande, from the YouTube channel Scilabus, visited us at the laboratory for a video about Ultrasound Localization Microscopy. She interviewed Chloé on this method, which is at the heart of the projects carried out in our laboratory. Thank you Viviane!',
+    ],
+  },
+  {
     date: 'December 14th, 2022',
     title: 'Article in “Curium” magazine!',
     images: ['news-21'],
@@ -278,6 +287,19 @@ const news = [
           ))}
         </div>
       )}
+      {e.video && (
+        <div class="embed">
+          <iframe
+            src={e.video.type === 'youtube'
+              ? `https://www.youtube.com/embed/${e.video.id}`
+              : `https://drive.google.com/file/d/${e.video.id}/preview`}
+            title={e.title}
+            loading="lazy"
+            allow="autoplay; encrypted-media"
+            allowfullscreen
+          ></iframe>
+        </div>
+      )}
       {e.body.map((p) => <p>{p}</p>)}
       {e.links && (
         <ul class="news-links">
@@ -320,6 +342,20 @@ const news = [
       height: auto;
       border-radius: 10px;
       display: block;
+    }
+    .embed {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      max-width: 560px;
+      margin-bottom: 14px;
+    }
+    .embed iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: 10px;
     }
     .news p { margin: 0 0 10px; }
     .news-links {

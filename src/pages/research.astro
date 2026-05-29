@@ -1,7 +1,86 @@
 ---
 import Base from '../layouts/Base.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '') + '/';
+const fig = (s) => `${base}research/${s}.jpg`;
+
+const intro = {
+  heading: 'Dynamic ultrasound localization microscopy',
+  body: [
+    'Ultrasound Localization Microscopy (ULM) tracks individual microbubbles flowing through blood vessels to create super-resolution snapshots of arterioles and measure average flow velocities.',
+    'Dynamic Ultrasound Localization Microscopy—developed by our lab—extends these capabilities in several important ways. By measuring blood flow changes throughout the cardiac cycle, DULM can visualize individual capillaries in the brain, and its temporal tracking of motion makes imaging possible in moving organs like the beating heart—previously inaccessible to ULM. This provides clinically meaningful biomarkers like capillary transit time and pulsatility that reflect microvascular health, transforming ULM into a functional platform for detecting and monitoring disease.',
+  ],
+};
+
+const sections = [
+  {
+    title: 'Applications',
+    items: [
+      { slug: 'pulsatility-imaging', title: 'Pulsatility Imaging', body: 'Increase of pulsatility in small vessels is an early sign of neurodegenerative diseases. Traditional imaging only sees pulsatility in large arteries—we can now measure it in vessels as small as 30 μm.' },
+      { slug: 'single-capillary-reporters', title: 'Single Capillary Reporters', body: 'Capillary stalling and slowed transit time occur in neuroinflammation, Alzheimer’s, and stroke, but identifying where these changes happen has been impossible. For the first time, we can map this across the entire brain non-invasively, pinpointing which regions and which specific capillaries show dysfunction—critical for understanding disease mechanisms and monitoring treatments.' },
+      { slug: 'myocardial-ultrasound-localization-angio', title: 'Myocardial ultrasound localization angiography', body: 'The blood vessels contained within the cardiac wall cannot be imaged directly and individually, while their dysfunction accounts for more than 50% of patients presenting with stable angina. We were able to show the feasibility of mapping those vessels in the beating heart and are working toward clinical translation.' },
+      { slug: 'brain-therapy-and-monitoring', title: 'Brain Therapy and monitoring', body: 'Manipulating the vasculature using ultrasound to achieve bioeffects such as opening the blood-brain barrier is gaining momentum, but monitoring methods in small animals remain mostly limited to magnetic resonance imaging. We are working toward the development of ultrasound-based solutions to facilitate research on larger animal populations.' },
+    ],
+  },
+  {
+    title: 'Technical developments',
+    items: [
+      { slug: 'transcranial-imaging', title: 'Transcranial imaging', body: 'Ultrasound can propagate deep in tissue but is limited by bones in general and the skull in particular, which often require craniotomies in small animal studies and limit translation in humans. We have recently developed several new approaches for aberration correction that are robust and reproducible.' },
+      { slug: 'particle-tracking', title: 'Particle tracking', body: 'Dynamic ultrasound localization microscopy requires the tracking of a large number of microbubbles. We are developing novel approaches to track more microbubbles, in the presence of higher concentration and for longer duration, to enable the development of novel biomarkers.' },
+      { slug: '3d-imaging', title: '3D imaging', body: '3D ultrafast ultrasound imaging is a challenging engineering problem, as the required number of piezoelectric elements (and thus cost and datasets) grows quadratically. We are working on several approaches based on novel probe architectures to address this problem.' },
+      { slug: 'clinical-imaging', title: 'Clinical imaging', body: 'An important advantage of ultrasound imaging is that methods developed for small animal imaging are readily translatable to humans, often using the same electronics. When moving to the clinic, we need to adapt our methods; we have developed new approaches to drastically improve image quality in the human heart and to cross the thicker skulls for brain imaging.' },
+      { slug: 'simulations', title: 'Simulations', body: 'We are developing highly realistic simulation frameworks to predict how the behavior of microbubbles in the microvasculature affects hundreds of thousands of ultrasound images, and how these images can be used to recover said behavior. Such simulations involve large computations typically run on massively parallel architectures.' },
+      { slug: 'deep-learning', title: 'Deep learning', body: 'We are developing deep learning methods to process our images at various stages, from aberration correction to microbubble detection and labelling. We have been pioneers in using several novel components in these networks, such as sparse or complex-valued networks.' },
+    ],
+  },
+];
 ---
 <Base title="Research — Provost Ultrasound Lab">
   <h1>Research</h1>
-  <p><em>Content to be ported from the current site.</em></p>
+
+  <h2>{intro.heading}</h2>
+  {intro.body.map((p) => <p>{p}</p>)}
+
+  {sections.map((sec) => (
+    <section>
+      <h2>{sec.title}</h2>
+      {sec.items.map((it) => (
+        <div class="topic">
+          <img src={fig(it.slug)} alt={it.title} loading="lazy" />
+          <div>
+            <h3>{it.title}</h3>
+            <p>{it.body}</p>
+          </div>
+        </div>
+      ))}
+    </section>
+  ))}
+
+  <style>
+    h2 {
+      color: var(--accent-dark);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+      margin-top: 36px;
+    }
+    .topic {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin: 20px 0;
+    }
+    .topic img {
+      width: 280px;
+      flex-shrink: 0;
+      height: auto;
+      border-radius: 10px;
+      display: block;
+    }
+    .topic h3 { margin: 0 0 6px; font-size: 17px; }
+    .topic p { margin: 0; }
+    @media (max-width: 640px) {
+      .topic { flex-direction: column; }
+      .topic img { width: 100%; }
+    }
+  </style>
 </Base>
