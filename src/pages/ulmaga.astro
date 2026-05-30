@@ -61,7 +61,7 @@ import Base from '../layouts/Base.astro';
         return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
       }
 
-      let player, bullets, bubbles, particles, ripples, planeWaves;
+      let player, bullets, bubbles, particles, ripples, planeWaves, beams;
       let score, lives, wave, superCharges;
       let lastSpawn, spawnInterval, lastShot, lastTime;
       let paused = false, gameOver = false;
@@ -86,15 +86,19 @@ import Base from '../layouts/Base.astro';
         const now = performance.now();
         if (now - lastShot < SHOT_COOLDOWN) return;
         lastShot = now;
-        bullets.push({
-          x: player.x + player.w / 2,
-          y: player.y - 4,
-          vy: -520,
-          r: 3.5,
-          life: 1.5,
-        });
+        const cx = player.x + player.w / 2;
+        const yProbe = player.y - 4;
+        bullets.push({ x: cx, y: yProbe, vy: -520, r: 3.5, life: 1.5 });
         // Ripple at probe face when firing
-        ripples.push({ x: player.x + player.w / 2, y: player.y - 4, r: 6, alpha: 0.55 });
+        ripples.push({ x: cx, y: yProbe, r: 6, alpha: 0.55 });
+        // Focused-beam shape (hourglass: wide at aperture, narrow at focus, diverging in the far field)
+        beams.push({
+          x: cx,
+          yProbe,
+          yFocus: Math.max(70, yProbe - 240),
+          age: 0,
+          duration: 0.32,
+        });
       }
 
       function firePlaneWave() {
@@ -254,6 +258,10 @@ import Base from '../layouts/Base.astro';
         for (const r of ripples) { r.r += 80 * dt; r.alpha -= 1.8 * dt; }
         ripples = ripples.filter((r) => r.alpha > 0);
 
+        // Focused-beam shapes (fade out over their duration)
+        for (const b of beams) b.age += dt;
+        beams = beams.filter((b) => b.age < b.duration);
+
         // Plane waves (super weapon): travel up and cavitate every bubble they cross
         for (const w of planeWaves) { w.y += w.vy * dt; w.age += dt; }
         for (const w of planeWaves) {
@@ -360,6 +368,40 @@ import Base from '../layouts/Base.astro';
             ctx.lineTo(x, y + Math.sin((x + i * 17) * 0.04) * 3);
           }
           ctx.stroke();
+        }
+
+        // Focused beam shapes — hourglass from probe through focus to far field
+        for (const bm of beams) {
+          const t = bm.age / bm.duration;
+          const a = (1 - t);
+          const cx = bm.x;
+          const yP = bm.yProbe;
+          const yF = bm.yFocus;
+          const wP = 22, wF = 3, wT = 18;
+          // Filled glow
+          const g = ctx.createLinearGradient(0, yP, 0, 0);
+          g.addColorStop(0,         'rgba(144, 224, 239, ' + (0.32 * a) + ')');
+          g.addColorStop(yF / yP,   'rgba(255, 255, 255, ' + (0.55 * a) + ')');
+          g.addColorStop(1,         'rgba(144, 224, 239, ' + (0.08 * a) + ')');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.moveTo(cx - wP / 2, yP);
+          ctx.lineTo(cx - wF / 2, yF);
+          ctx.lineTo(cx - wT / 2, 0);
+          ctx.lineTo(cx + wT / 2, 0);
+          ctx.lineTo(cx + wF / 2, yF);
+          ctx.lineTo(cx + wP / 2, yP);
+          ctx.closePath();
+          ctx.fill();
+          // Subtle outline
+          ctx.strokeStyle = 'rgba(202, 240, 248, ' + (0.45 * a) + ')';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          // Tiny bright waist at the focus
+          ctx.fillStyle = 'rgba(255,255,255,' + (0.6 * a) + ')';
+          ctx.beginPath();
+          ctx.arc(cx, yF, 2, 0, Math.PI * 2);
+          ctx.fill();
         }
 
         // Bullets (ultrasound pulses): bright cyan with glow halo
@@ -476,6 +518,7 @@ import Base from '../layouts/Base.astro';
         particles = [];
         ripples = [];
         planeWaves = [];
+        beams = [];
         score = 0;
         lives = 3;
         wave = 1;
