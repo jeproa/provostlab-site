@@ -58,7 +58,11 @@ import Base from '../layouts/Base.astro';
       const restartBtn = document.getElementById('restart');
       const resumeBtn = document.getElementById('resume');
 
-      const COLORS = ['#ff6b1a', '#ffb347', '#ff8c42', '#e63946', '#d62828', '#ffa552', '#f77f00'];
+      // Doppler-style palette: warm reds and saturated blues
+      const COLORS = [
+        '#ff3a3a', '#e63946', '#d62828', '#ff5252', '#cc1a1a',  // reds
+        '#2a6dff', '#1853c2', '#3389ff', '#0d52cc', '#1f7aff',  // blues
+      ];
 
       // Vascular hierarchy: 4 trunks with character (some enter from off-canvas top sides
       // and curve inward); each branches into 2 arterioles, then a spread of capillaries.
