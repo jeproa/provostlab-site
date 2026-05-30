@@ -60,25 +60,37 @@ import Base from '../layouts/Base.astro';
 
       const COLORS = ['#ff6b1a', '#ffb347', '#ff8c42', '#e63946', '#d62828', '#ffa552', '#f77f00'];
 
-      // Vascular hierarchy: trunks at the top, branching into arterioles, then capillaries
-      const TRUNK_XS = [W * 0.20, W * 0.40, W * 0.60, W * 0.80];
+      // Vascular hierarchy: 4 trunks with character (some enter from off-canvas top sides
+      // and curve inward); each branches into 2 arterioles, then a spread of capillaries.
+      const TRUNKS = [
+        { entryX: -30,        branchX: W * 0.20, sway:  32 },   // top-left, curves right
+        { entryX: W * 0.36,   branchX: W * 0.42, sway:  18 },   // mostly straight, gentle S
+        { entryX: W * 0.64,   branchX: W * 0.58, sway: -18 },   // mirror of trunk 1
+        { entryX: W + 30,     branchX: W * 0.80, sway: -32 },   // top-right, curves left
+      ];
       const ARTERIOLE_OFFSET = 48;
       const CAPILLARY_SPREAD = 70;
-      const Y_ARTERIOLE = H * 0.22;     // arterioles start fanning out around here
-      const Y_CAPILLARY = H * 0.55;     // capillaries spread out from here down
+      const Y_ARTERIOLE = H * 0.22;
+      const Y_CAPILLARY = H * 0.55;
 
       function smoothStep(t) { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); }
 
-      function targetX(b) {
-        const trunk = TRUNK_XS[b.trunkIdx];
-        const arteriole = trunk + b.arterioleSide * ARTERIOLE_OFFSET;
+      function targetXAt(b, y) {
+        const trunk = TRUNKS[b.trunkIdx];
+        const arteriole = trunk.branchX + b.arterioleSide * ARTERIOLE_OFFSET;
         const capillary = arteriole + b.capillaryOff;
-        if (b.y < Y_ARTERIOLE) return trunk;
-        if (b.y < Y_CAPILLARY) {
-          const t = (b.y - Y_ARTERIOLE) / (Y_CAPILLARY - Y_ARTERIOLE);
-          return trunk + (arteriole - trunk) * smoothStep(t);
+        if (y < Y_ARTERIOLE) {
+          const t = Math.max(0, Math.min(1, y / Y_ARTERIOLE));
+          const s = smoothStep(t);
+          const baseX = trunk.entryX + (trunk.branchX - trunk.entryX) * s;
+          const swayOffset = trunk.sway * Math.sin(Math.PI * t);
+          return baseX + swayOffset;
         }
-        const t = Math.min(1, (b.y - Y_CAPILLARY) / (H * 0.3));
+        if (y < Y_CAPILLARY) {
+          const t = (y - Y_ARTERIOLE) / (Y_CAPILLARY - Y_ARTERIOLE);
+          return trunk.branchX + (arteriole - trunk.branchX) * smoothStep(t);
+        }
+        const t = Math.min(1, (y - Y_CAPILLARY) / (H * 0.3));
         return arteriole + (capillary - arteriole) * smoothStep(t);
       }
 
@@ -100,12 +112,12 @@ import Base from '../layouts/Base.astro';
 
       function spawnBubble() {
         const r = rand(14, 30);
-        // Assign a path through the vascular tree
-        const trunkIdx = Math.floor(Math.random() * TRUNK_XS.length);
+        const trunkIdx = Math.floor(Math.random() * TRUNKS.length);
+        const trunk = TRUNKS[trunkIdx];
         const arterioleSide = Math.random() < 0.5 ? -1 : 1;
         const capillaryOff = rand(-CAPILLARY_SPREAD, CAPILLARY_SPREAD);
         bubbles.push({
-          x: TRUNK_XS[trunkIdx] + rand(-6, 6),
+          x: trunk.entryX + rand(-5, 5),
           y: -r - 10,
           r,
           color: pick(COLORS),
@@ -202,17 +214,18 @@ import Base from '../layouts/Base.astro';
             b.baseSpeed *= Math.pow(0.35, dt);
           } else {
             b.age += dt;
-            // Depth-dependent vessel rules: tight trunks → looser arterioles → chaotic capillaries
+            // Depth-dependent vessel rules. Trunks need a wider maxDev because they can
+            // come in diagonally from the top sides.
             let turnAmpScale, targetPull, maxDev;
             if (b.y < Y_ARTERIOLE) {
-              turnAmpScale = 0.25; targetPull = 3.2; maxDev = Math.PI / 14;
+              turnAmpScale = 0.15; targetPull = 4.0; maxDev = Math.PI / 3;
             } else if (b.y < Y_CAPILLARY) {
               turnAmpScale = 0.7;  targetPull = 1.6; maxDev = Math.PI / 5;
             } else {
               turnAmpScale = 1.0;  targetPull = 0.6; maxDev = Math.PI / 3;
             }
-            // Pull heading toward this bubble's assigned vessel target x
-            const tx = targetX(b);
+            // Pull heading toward where this bubble's vessel is 80 px below the current depth
+            const tx = targetXAt(b, b.y + 80);
             const dx = tx - b.x;
             const desired = Math.atan2(80, dx);
             let diff = desired - b.heading;
@@ -236,8 +249,12 @@ import Base from '../layouts/Base.astro';
           const prevX = b.prevX, prevY = b.prevY;
           b.x += b.vx * dt;
           b.y += b.vy * dt;
-          if (b.x < b.r) { b.x = b.r; b.heading = Math.PI - b.heading; }
-          if (b.x > W - b.r) { b.x = W - b.r; b.heading = Math.PI - b.heading; }
+          // Only bounce off walls once the bubble has settled into the arteriole region,
+          // so trunks entering from off-canvas sides can curve in without bouncing.
+          if (b.y > Y_ARTERIOLE) {
+            if (b.x < b.r) { b.x = b.r; b.heading = Math.PI - b.heading; }
+            if (b.x > W - b.r) { b.x = W - b.r; b.heading = Math.PI - b.heading; }
+          }
 
           if (prevX !== undefined) {
             tctx.strokeStyle = b.color;
