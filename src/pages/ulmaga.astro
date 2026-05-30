@@ -60,6 +60,28 @@ import Base from '../layouts/Base.astro';
 
       const COLORS = ['#ff6b1a', '#ffb347', '#ff8c42', '#e63946', '#d62828', '#ffa552', '#f77f00'];
 
+      // Vascular hierarchy: trunks at the top, branching into arterioles, then capillaries
+      const TRUNK_XS = [W * 0.20, W * 0.40, W * 0.60, W * 0.80];
+      const ARTERIOLE_OFFSET = 48;
+      const CAPILLARY_SPREAD = 70;
+      const Y_ARTERIOLE = H * 0.22;     // arterioles start fanning out around here
+      const Y_CAPILLARY = H * 0.55;     // capillaries spread out from here down
+
+      function smoothStep(t) { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); }
+
+      function targetX(b) {
+        const trunk = TRUNK_XS[b.trunkIdx];
+        const arteriole = trunk + b.arterioleSide * ARTERIOLE_OFFSET;
+        const capillary = arteriole + b.capillaryOff;
+        if (b.y < Y_ARTERIOLE) return trunk;
+        if (b.y < Y_CAPILLARY) {
+          const t = (b.y - Y_ARTERIOLE) / (Y_CAPILLARY - Y_ARTERIOLE);
+          return trunk + (arteriole - trunk) * smoothStep(t);
+        }
+        const t = Math.min(1, (b.y - Y_CAPILLARY) / (H * 0.3));
+        return arteriole + (capillary - arteriole) * smoothStep(t);
+      }
+
       function rand(a, b) { return Math.random() * (b - a) + a; }
       function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
       function hexToRgb(hex) {
@@ -78,21 +100,24 @@ import Base from '../layouts/Base.astro';
 
       function spawnBubble() {
         const r = rand(14, 30);
+        // Assign a path through the vascular tree
+        const trunkIdx = Math.floor(Math.random() * TRUNK_XS.length);
+        const arterioleSide = Math.random() < 0.5 ? -1 : 1;
+        const capillaryOff = rand(-CAPILLARY_SPREAD, CAPILLARY_SPREAD);
         bubbles.push({
-          x: rand(r, W - r),
+          x: TRUNK_XS[trunkIdx] + rand(-6, 6),
           y: -r - 10,
           r,
           color: pick(COLORS),
-          // Curving-vessel motion: each bubble has its own heading + sinusoidal turning + pulsatile speed
-          heading: Math.PI / 2 + rand(-0.55, 0.55),
+          heading: Math.PI / 2,
           baseSpeed: rand(45 + wave * 4, 105 + wave * 6),
           speedPhase: rand(0, Math.PI * 2),
           turnPhase: rand(0, Math.PI * 2),
           turnFreq: rand(0.6, 2.2),
           turnAmp: rand(0.9, 1.7),
           age: 0,
-          vx: 0,
-          vy: 0,
+          vx: 0, vy: 0,
+          trunkIdx, arterioleSide, capillaryOff,
         });
       }
 
@@ -177,16 +202,27 @@ import Base from '../layouts/Base.astro';
             b.baseSpeed *= Math.pow(0.35, dt);
           } else {
             b.age += dt;
-            // Sinusoidal heading wobble (vessel-like curves)
-            const turn = b.turnAmp * Math.sin(b.age * b.turnFreq + b.turnPhase);
-            b.heading += turn * dt;
-            // Soft pull toward downward so the flow stays going down
-            let diff = (Math.PI / 2) - b.heading;
+            // Depth-dependent vessel rules: tight trunks → looser arterioles → chaotic capillaries
+            let turnAmpScale, targetPull, maxDev;
+            if (b.y < Y_ARTERIOLE) {
+              turnAmpScale = 0.25; targetPull = 3.2; maxDev = Math.PI / 14;
+            } else if (b.y < Y_CAPILLARY) {
+              turnAmpScale = 0.7;  targetPull = 1.6; maxDev = Math.PI / 5;
+            } else {
+              turnAmpScale = 1.0;  targetPull = 0.6; maxDev = Math.PI / 3;
+            }
+            // Pull heading toward this bubble's assigned vessel target x
+            const tx = targetX(b);
+            const dx = tx - b.x;
+            const desired = Math.atan2(80, dx);
+            let diff = desired - b.heading;
             while (diff > Math.PI) diff -= 2 * Math.PI;
             while (diff < -Math.PI) diff += 2 * Math.PI;
-            b.heading += diff * 0.55 * dt;
-            // Hard clamp deviation to ±60° from straight down
-            const maxDev = Math.PI / 3;
+            b.heading += diff * targetPull * dt;
+            // Sinusoidal wobble (amplitude scaled by depth)
+            const turn = b.turnAmp * turnAmpScale * Math.sin(b.age * b.turnFreq + b.turnPhase);
+            b.heading += turn * dt;
+            // Clamp deviation
             let dev = b.heading - Math.PI / 2;
             while (dev > Math.PI) dev -= 2 * Math.PI;
             while (dev < -Math.PI) dev += 2 * Math.PI;
@@ -228,11 +264,12 @@ import Base from '../layouts/Base.astro';
             popBubble(b, true);
             if (b.splitOnPop) {
               for (let k = 0; k < 2; k++) {
+                const branch = k === 0 ? -1 : 1;
                 bubbles.push({
                   x: b.x, y: b.y,
                   r: b.r * 0.55,
                   color: b.color,
-                  heading: b.heading + (k === 0 ? -0.55 : 0.55) + rand(-0.15, 0.15),
+                  heading: b.heading + branch * 0.55 + rand(-0.15, 0.15),
                   baseSpeed: b.baseSpeed * rand(0.9, 1.3),
                   speedPhase: rand(0, Math.PI * 2),
                   turnPhase: rand(0, Math.PI * 2),
@@ -240,6 +277,10 @@ import Base from '../layouts/Base.astro';
                   turnAmp: rand(0.9, 1.8),
                   age: 0,
                   vx: 0, vy: 0,
+                  // Inherit parent's tree position; offset capillary so children fan out
+                  trunkIdx: b.trunkIdx,
+                  arterioleSide: b.arterioleSide,
+                  capillaryOff: b.capillaryOff + branch * CAPILLARY_SPREAD * 0.6,
                 });
               }
             }
