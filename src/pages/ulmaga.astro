@@ -152,36 +152,54 @@ import Base from '../layouts/Base.astro';
         for (const b of bullets) { b.y += b.vy * dt; b.life -= dt; }
         bullets = bullets.filter((b) => b.y + b.r > 0 && b.life > 0);
 
-        // Bubbles
+        // Bubbles — motion + cavitation timer
         for (const b of bubbles) {
+          if (b.cavitating) {
+            b.cavTime += dt;
+            // Damp motion while cavitating (locked in place by the acoustic field)
+            const damp = Math.pow(0.35, dt);
+            b.vx *= damp;
+            b.vy *= damp;
+          }
           b.x += b.vx * dt;
           b.y += b.vy * dt;
           if (b.x < b.r) { b.x = b.r; b.vx = Math.abs(b.vx); }
           if (b.x > W - b.r) { b.x = W - b.r; b.vx = -Math.abs(b.vx); }
         }
 
-        // Bullet vs bubble collisions
+        // Pop bubbles whose cavitation has finished
+        for (let j = bubbles.length - 1; j >= 0; j--) {
+          const b = bubbles[j];
+          if (b.cavitating && b.cavTime >= b.cavDuration) {
+            popBubble(b, true);
+            if (b.splitOnPop) {
+              for (let k = 0; k < 2; k++) {
+                bubbles.push({
+                  x: b.x, y: b.y,
+                  vx: b.vx + rand(-80, 80),
+                  vy: b.vy + rand(10, 50),
+                  r: b.r * 0.55,
+                  color: b.color,
+                });
+              }
+            }
+            bubbles.splice(j, 1);
+          }
+        }
+
+        // Bullet vs bubble collisions — start cavitation rather than instant pop
         for (let i = bullets.length - 1; i >= 0; i--) {
           const bullet = bullets[i];
           let hit = false;
           for (let j = bubbles.length - 1; j >= 0; j--) {
             const bub = bubbles[j];
+            if (bub.cavitating) continue;
             const dx = bullet.x - bub.x, dy = bullet.y - bub.y;
             if (dx * dx + dy * dy < (bullet.r + bub.r) * (bullet.r + bub.r)) {
-              popBubble(bub, bub.r > 22);
-              // Split large bubbles
-              if (bub.r > 22) {
-                for (let k = 0; k < 2; k++) {
-                  bubbles.push({
-                    x: bub.x, y: bub.y,
-                    vx: bub.vx + rand(-80, 80),
-                    vy: bub.vy + rand(10, 50),
-                    r: bub.r * 0.55,
-                    color: bub.color,
-                  });
-                }
-              }
-              bubbles.splice(j, 1);
+              bub.cavitating = true;
+              bub.cavTime = 0;
+              bub.cavDuration = 0.32;
+              bub.splitOnPop = bub.r > 22;
               hit = true;
               break;
             }
@@ -189,10 +207,10 @@ import Base from '../layouts/Base.astro';
           if (hit) bullets.splice(i, 1);
         }
 
-        // Bubbles vs floor / player
+        // Bubbles vs floor / player (cavitating bubbles can't hurt the probe)
         for (let j = bubbles.length - 1; j >= 0; j--) {
           const b = bubbles[j];
-          const hitsPlayer =
+          const hitsPlayer = !b.cavitating &&
             b.y + b.r >= player.y && b.y - b.r <= player.y + player.h &&
             b.x + b.r >= player.x && b.x - b.r <= player.x + player.w;
           const offBottom = b.y - b.r > H;
@@ -236,17 +254,20 @@ import Base from '../layouts/Base.astro';
         for (const r of ripples) { r.r += 80 * dt; r.alpha -= 1.8 * dt; }
         ripples = ripples.filter((r) => r.alpha > 0);
 
-        // Plane waves (super weapon): travel up and pop every bubble they cross
+        // Plane waves (super weapon): travel up and cavitate every bubble they cross
         for (const w of planeWaves) { w.y += w.vy * dt; w.age += dt; }
-        // Collide each wave with bubbles BEFORE removing off-screen ones
         for (const w of planeWaves) {
           const top = w.y - w.height / 2;
           const bot = w.y + w.height / 2;
           for (let j = bubbles.length - 1; j >= 0; j--) {
             const b = bubbles[j];
+            if (b.cavitating) continue;
             if (b.y + b.r >= top && b.y - b.r <= bot) {
-              popBubble(b, b.r > 22);
-              bubbles.splice(j, 1);
+              // Intense — short cavitation, no split
+              b.cavitating = true;
+              b.cavTime = 0;
+              b.cavDuration = 0.16;
+              b.splitOnPop = false;
             }
           }
         }
@@ -354,8 +375,27 @@ import Base from '../layouts/Base.astro';
           ctx.fill();
         }
 
-        // Bubbles
-        for (const b of bubbles) drawBubble(ctx, b.x, b.y, b.r, b.color);
+        // Bubbles (cavitating ones oscillate with a pulsing acoustic halo)
+        for (const b of bubbles) {
+          if (b.cavitating) {
+            const t = b.cavTime;
+            const wobble = 1 + 0.28 * Math.sin(t * 55);
+            const grow = 1 + (t / b.cavDuration) * 0.35;
+            const rEff = b.r * wobble * grow;
+            drawBubble(ctx, b.x, b.y, rEff, b.color);
+            const flash = 0.5 + 0.5 * Math.sin(t * 45);
+            ctx.save();
+            ctx.globalAlpha = 0.35 + 0.45 * flash;
+            ctx.strokeStyle = '#caf0f8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, rEff + 3, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+          } else {
+            drawBubble(ctx, b.x, b.y, b.r, b.color);
+          }
+        }
 
         // Particles
         for (const p of particles) {
