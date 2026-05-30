@@ -1,0 +1,543 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="ULMaga — Provost Ultrasound Lab">
+  <div class="game-wrap">
+    <h1>ULMaga</h1>
+    <p class="tagline">Aim the probe. Pop the bubbles before they reach you.</p>
+
+    <div class="game-area">
+      <div class="board-wrap">
+        <canvas id="board" width="480" height="640"></canvas>
+        <div id="overlay" class="overlay hidden">
+          <div class="overlay-content">
+            <div id="overlay-title">Paused</div>
+            <div id="overlay-sub"></div>
+            <button id="resume" class="btn">Resume</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <div class="stat"><div class="label">Score</div><div class="value" id="score">0</div></div>
+        <div class="stat"><div class="label">Lives</div><div class="value" id="lives">♥♥♥</div></div>
+        <div class="stat"><div class="label">Wave</div><div class="value" id="wave">1</div></div>
+        <button id="restart" class="btn ghost">New Game</button>
+        <details class="controls">
+          <summary>Controls</summary>
+          <ul>
+            <li><kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> move</li>
+            <li><kbd>Space</kbd> shoot (hold to auto-fire)</li>
+            <li><kbd>P</kbd> pause</li>
+          </ul>
+        </details>
+      </aside>
+    </div>
+  </div>
+
+  <script is:inline>
+    (function () {
+      const W = 480, H = 640;
+      const board = document.getElementById('board');
+      const ctx = board.getContext('2d');
+      const scoreEl = document.getElementById('score');
+      const livesEl = document.getElementById('lives');
+      const waveEl = document.getElementById('wave');
+      const overlay = document.getElementById('overlay');
+      const overlayTitle = document.getElementById('overlay-title');
+      const overlaySub = document.getElementById('overlay-sub');
+      const restartBtn = document.getElementById('restart');
+      const resumeBtn = document.getElementById('resume');
+
+      const COLORS = ['#ff6b1a', '#ffb347', '#ff8c42', '#e63946', '#d62828', '#ffa552', '#f77f00'];
+
+      function rand(a, b) { return Math.random() * (b - a) + a; }
+      function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+      function hexToRgb(hex) {
+        const n = parseInt(hex.replace('#', ''), 16);
+        return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+      }
+
+      let player, bullets, bubbles, particles, ripples;
+      let score, lives, wave;
+      let lastSpawn, spawnInterval, lastShot, lastTime;
+      let paused = false, gameOver = false;
+      const SHOT_COOLDOWN = 180;
+
+      const keys = {};
+      const PRESS_ONLY = new Set(); // tracks keys whose press already fired single-shot logic
+
+      function spawnBubble() {
+        const r = rand(14, 30);
+        bubbles.push({
+          x: rand(r, W - r),
+          y: -r - 10,
+          vx: rand(-40, 40),
+          vy: rand(40 + wave * 6, 90 + wave * 8),
+          r,
+          color: pick(COLORS),
+        });
+      }
+
+      function shoot() {
+        const now = performance.now();
+        if (now - lastShot < SHOT_COOLDOWN) return;
+        lastShot = now;
+        bullets.push({
+          x: player.x + player.w / 2,
+          y: player.y - 4,
+          vy: -520,
+          r: 3.5,
+          life: 1.5,
+        });
+        // Ripple at probe face when firing
+        ripples.push({ x: player.x + player.w / 2, y: player.y - 4, r: 6, alpha: 0.55 });
+      }
+
+      function popBubble(b, big) {
+        const n = big ? 22 : 14;
+        for (let i = 0; i < n; i++) {
+          const a = (i / n) * Math.PI * 2 + Math.random() * 0.4;
+          const v = rand(80, 200);
+          particles.push({
+            x: b.x, y: b.y,
+            vx: Math.cos(a) * v,
+            vy: Math.sin(a) * v,
+            r: rand(1.5, 3.5),
+            color: b.color,
+            life: 0.7,
+          });
+        }
+        score += Math.round((34 - b.r) * 4);
+        updateStats();
+      }
+
+      function updateStats() {
+        scoreEl.textContent = score;
+        livesEl.textContent = lives > 0 ? '♥'.repeat(lives) : '—';
+        waveEl.textContent = wave;
+      }
+
+      function tick(dt) {
+        // Player movement
+        const speed = 360;
+        if (keys.ArrowLeft || keys.KeyA) player.x -= speed * dt;
+        if (keys.ArrowRight || keys.KeyD) player.x += speed * dt;
+        player.x = Math.max(0, Math.min(W - player.w, player.x));
+
+        // Auto-fire while space held
+        if (keys.Space) shoot();
+
+        // Bullets
+        for (const b of bullets) { b.y += b.vy * dt; b.life -= dt; }
+        bullets = bullets.filter((b) => b.y + b.r > 0 && b.life > 0);
+
+        // Bubbles
+        for (const b of bubbles) {
+          b.x += b.vx * dt;
+          b.y += b.vy * dt;
+          if (b.x < b.r) { b.x = b.r; b.vx = Math.abs(b.vx); }
+          if (b.x > W - b.r) { b.x = W - b.r; b.vx = -Math.abs(b.vx); }
+        }
+
+        // Bullet vs bubble collisions
+        for (let i = bullets.length - 1; i >= 0; i--) {
+          const bullet = bullets[i];
+          let hit = false;
+          for (let j = bubbles.length - 1; j >= 0; j--) {
+            const bub = bubbles[j];
+            const dx = bullet.x - bub.x, dy = bullet.y - bub.y;
+            if (dx * dx + dy * dy < (bullet.r + bub.r) * (bullet.r + bub.r)) {
+              popBubble(bub, bub.r > 22);
+              // Split large bubbles
+              if (bub.r > 22) {
+                for (let k = 0; k < 2; k++) {
+                  bubbles.push({
+                    x: bub.x, y: bub.y,
+                    vx: bub.vx + rand(-80, 80),
+                    vy: bub.vy + rand(10, 50),
+                    r: bub.r * 0.55,
+                    color: bub.color,
+                  });
+                }
+              }
+              bubbles.splice(j, 1);
+              hit = true;
+              break;
+            }
+          }
+          if (hit) bullets.splice(i, 1);
+        }
+
+        // Bubbles vs floor / player
+        for (let j = bubbles.length - 1; j >= 0; j--) {
+          const b = bubbles[j];
+          const hitsPlayer =
+            b.y + b.r >= player.y && b.y - b.r <= player.y + player.h &&
+            b.x + b.r >= player.x && b.x - b.r <= player.x + player.w;
+          const offBottom = b.y - b.r > H;
+          if (hitsPlayer || offBottom) {
+            if (hitsPlayer) {
+              lives = Math.max(0, lives - 1);
+              popBubble(b, true);
+              // White burst on impact
+              for (let i = 0; i < 18; i++) {
+                const a = (i / 18) * Math.PI * 2;
+                particles.push({
+                  x: b.x, y: b.y,
+                  vx: Math.cos(a) * 240,
+                  vy: Math.sin(a) * 240,
+                  r: rand(1.5, 4),
+                  color: '#ffffff',
+                  life: 0.6,
+                });
+              }
+              updateStats();
+              if (lives <= 0) {
+                gameOver = true;
+                showOverlay('Game Over', 'Score: ' + score + ' · Wave ' + wave);
+              }
+            }
+            bubbles.splice(j, 1);
+          }
+        }
+
+        // Particles
+        for (const p of particles) {
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          p.vy += 60 * dt;
+          p.vx *= (1 - 0.6 * dt);
+          p.life -= dt;
+        }
+        particles = particles.filter((p) => p.life > 0);
+
+        // Ripples (probe firing flash)
+        for (const r of ripples) { r.r += 80 * dt; r.alpha -= 1.8 * dt; }
+        ripples = ripples.filter((r) => r.alpha > 0);
+
+        // Spawn / wave progression
+        const now = performance.now();
+        if (now - lastSpawn > spawnInterval) {
+          spawnBubble();
+          lastSpawn = now;
+          spawnInterval = Math.max(280, spawnInterval - 6);
+        }
+        // Promote wave every 1500 points
+        const targetWave = 1 + Math.floor(score / 1500);
+        if (targetWave > wave) { wave = targetWave; updateStats(); }
+      }
+
+      function drawBubble(c, cx, cy, r, color, alpha) {
+        if (alpha === undefined) alpha = 1;
+        const [rr, gg, bb] = hexToRgb(color);
+        const light = `rgb(${Math.min(255, rr + 90)},${Math.min(255, gg + 90)},${Math.min(255, bb + 90)})`;
+        const dark = `rgb(${Math.round(rr * 0.45)},${Math.round(gg * 0.45)},${Math.round(bb * 0.45)})`;
+        c.save();
+        c.globalAlpha = alpha;
+        const g = c.createRadialGradient(cx - r * 0.35, cy - r * 0.35, r * 0.05, cx, cy, r);
+        g.addColorStop(0, light);
+        g.addColorStop(0.45, color);
+        g.addColorStop(1, dark);
+        c.fillStyle = g;
+        c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fill();
+        c.fillStyle = 'rgba(255,255,255,0.55)';
+        c.beginPath(); c.arc(cx - r * 0.35, cy - r * 0.35, r * 0.22, 0, Math.PI * 2); c.fill();
+        c.strokeStyle = 'rgba(255,255,255,0.18)';
+        c.lineWidth = 1;
+        c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.stroke();
+        c.restore();
+      }
+
+      function drawProbe(c, p) {
+        // Body (rounded rect)
+        c.save();
+        c.fillStyle = '#0e3a64';
+        c.strokeStyle = '#1f5d99';
+        c.lineWidth = 1.5;
+        const radius = 6;
+        c.beginPath();
+        c.moveTo(p.x + radius, p.y);
+        c.lineTo(p.x + p.w - radius, p.y);
+        c.quadraticCurveTo(p.x + p.w, p.y, p.x + p.w, p.y + radius);
+        c.lineTo(p.x + p.w, p.y + p.h - radius);
+        c.quadraticCurveTo(p.x + p.w, p.y + p.h, p.x + p.w - radius, p.y + p.h);
+        c.lineTo(p.x + radius, p.y + p.h);
+        c.quadraticCurveTo(p.x, p.y + p.h, p.x, p.y + p.h - radius);
+        c.lineTo(p.x, p.y + radius);
+        c.quadraticCurveTo(p.x, p.y, p.x + radius, p.y);
+        c.closePath();
+        c.fill();
+        c.stroke();
+        // Transducer face (lighter strip on top)
+        c.fillStyle = '#cfd8e3';
+        c.fillRect(p.x + 6, p.y - 3, p.w - 12, 5);
+        // Wave fan above the face (purely visual)
+        c.strokeStyle = 'rgba(144, 224, 239, 0.35)';
+        c.lineWidth = 1;
+        const cx = p.x + p.w / 2, cy = p.y - 3;
+        for (let i = 1; i <= 3; i++) {
+          c.beginPath();
+          c.arc(cx, cy, i * 7, Math.PI, Math.PI * 2);
+          c.stroke();
+        }
+        c.restore();
+      }
+
+      function render() {
+        // Background
+        ctx.fillStyle = '#06070f';
+        ctx.fillRect(0, 0, W, H);
+        // Subtle vascular streaks
+        ctx.strokeStyle = 'rgba(255,80,40,0.05)';
+        ctx.lineWidth = 1.2;
+        for (let i = 0; i < 16; i++) {
+          const y = (i / 16) * H;
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          for (let x = 0; x <= W; x += 32) {
+            ctx.lineTo(x, y + Math.sin((x + i * 17) * 0.04) * 3);
+          }
+          ctx.stroke();
+        }
+
+        // Bullets (ultrasound pulses): bright cyan with glow halo
+        for (const b of bullets) {
+          const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r * 5);
+          g.addColorStop(0, 'rgba(144, 224, 239, 0.7)');
+          g.addColorStop(1, 'rgba(144, 224, 239, 0)');
+          ctx.fillStyle = g;
+          ctx.fillRect(b.x - b.r * 5, b.y - b.r * 5, b.r * 10, b.r * 10);
+          ctx.fillStyle = '#caf0f8';
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Bubbles
+        for (const b of bubbles) drawBubble(ctx, b.x, b.y, b.r, b.color);
+
+        // Particles
+        for (const p of particles) {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, p.life);
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Ripples on probe firing
+        for (const r of ripples) {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, r.alpha);
+          ctx.strokeStyle = '#caf0f8';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(r.x, r.y, r.r, Math.PI, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        drawProbe(ctx, player);
+      }
+
+      function loop(time) {
+        if (gameOver) {
+          render();
+          requestAnimationFrame(loop);
+          return;
+        }
+        if (paused) {
+          render();
+          requestAnimationFrame(loop);
+          return;
+        }
+        if (!lastTime) lastTime = time;
+        const dt = Math.min(0.05, (time - lastTime) / 1000);
+        lastTime = time;
+        tick(dt);
+        render();
+        requestAnimationFrame(loop);
+      }
+
+      function showOverlay(title, sub) {
+        overlayTitle.textContent = title;
+        overlaySub.textContent = sub || '';
+        resumeBtn.textContent = gameOver ? 'New Game' : 'Resume';
+        overlay.classList.remove('hidden');
+      }
+      function hideOverlay() { overlay.classList.add('hidden'); }
+
+      function newGame() {
+        player = { x: W / 2 - 32, y: H - 48, w: 64, h: 24 };
+        bullets = [];
+        bubbles = [];
+        particles = [];
+        ripples = [];
+        score = 0;
+        lives = 3;
+        wave = 1;
+        lastSpawn = performance.now();
+        spawnInterval = 1100;
+        lastShot = 0;
+        lastTime = 0;
+        paused = false;
+        gameOver = false;
+        updateStats();
+        hideOverlay();
+        requestAnimationFrame(loop);
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'ArrowLeft' || e.code === 'ArrowRight' || e.code === 'Space') {
+          e.preventDefault();
+        }
+        if (gameOver) {
+          if (e.code === 'Enter' || e.code === 'Space') newGame();
+          return;
+        }
+        keys[e.code] = true;
+        if (e.code === 'KeyP') {
+          paused = !paused;
+          if (paused) showOverlay('Paused');
+          else hideOverlay();
+        }
+      });
+      document.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+      restartBtn.addEventListener('click', newGame);
+      resumeBtn.addEventListener('click', () => {
+        if (gameOver) newGame();
+        else { paused = false; hideOverlay(); }
+      });
+
+      newGame();
+    })();
+  </script>
+
+  <style>
+    .game-wrap { max-width: 760px; margin: 0 auto; }
+    h1 {
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 28px;
+      margin-bottom: 0;
+    }
+    h1::after {
+      content: '';
+      display: block;
+      width: 60%;
+      max-width: 280px;
+      height: 3px;
+      background: var(--accent);
+      margin: 8px auto 0;
+    }
+    .tagline {
+      text-align: center;
+      color: var(--muted);
+      margin: 8px 0 24px;
+      font-style: italic;
+    }
+    .game-area {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .board-wrap {
+      position: relative;
+      width: 480px;
+      height: 640px;
+    }
+    canvas#board {
+      background: #06070f;
+      border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+      display: block;
+    }
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 160px;
+    }
+    .stat {
+      background: #f6f8fa;
+      padding: 10px 14px;
+      border-radius: 8px;
+    }
+    .stat .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .stat .value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent-dark);
+    }
+    .btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 14px;
+      font-size: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+    }
+    .btn:hover { background: var(--accent-dark); }
+    .btn.ghost { background: transparent; color: var(--accent); border: 1px solid var(--line); }
+    .btn.ghost:hover { background: var(--accent); color: #fff; }
+    .controls { font-size: 13px; color: var(--muted); }
+    .controls summary { cursor: pointer; }
+    .controls ul { padding-left: 18px; margin: 6px 0 0; list-style: none; }
+    .controls li { margin: 4px 0; }
+    .controls kbd {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+      color: var(--ink);
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10,10,20,0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+    .overlay.hidden { display: none; }
+    .overlay-content {
+      background: #fff;
+      padding: 22px 26px;
+      border-radius: 10px;
+      text-align: center;
+      min-width: 220px;
+    }
+    #overlay-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent-dark);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    #overlay-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+  </style>
+</Base>
