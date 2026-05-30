@@ -81,10 +81,18 @@ import Base from '../layouts/Base.astro';
         bubbles.push({
           x: rand(r, W - r),
           y: -r - 10,
-          vx: rand(-40, 40),
-          vy: rand(40 + wave * 6, 90 + wave * 8),
           r,
           color: pick(COLORS),
+          // Curving-vessel motion: each bubble has its own heading + sinusoidal turning + pulsatile speed
+          heading: Math.PI / 2 + rand(-0.55, 0.55),
+          baseSpeed: rand(45 + wave * 4, 105 + wave * 6),
+          speedPhase: rand(0, Math.PI * 2),
+          turnPhase: rand(0, Math.PI * 2),
+          turnFreq: rand(0.6, 2.2),
+          turnAmp: rand(0.9, 1.7),
+          age: 0,
+          vx: 0,
+          vy: 0,
         });
       }
 
@@ -162,19 +170,39 @@ import Base from '../layouts/Base.astro';
         for (const b of bullets) { b.y += b.vy * dt; b.life -= dt; }
         bullets = bullets.filter((b) => b.y + b.r > 0 && b.life > 0);
 
-        // Bubbles — motion + cavitation timer + track each path onto the vasculature layer
+        // Bubbles — curving motion, pulsatile speed, cavitation timer, track onto vasculature layer
         for (const b of bubbles) {
           if (b.cavitating) {
             b.cavTime += dt;
-            const damp = Math.pow(0.35, dt);
-            b.vx *= damp;
-            b.vy *= damp;
+            b.baseSpeed *= Math.pow(0.35, dt);
+          } else {
+            b.age += dt;
+            // Sinusoidal heading wobble (vessel-like curves)
+            const turn = b.turnAmp * Math.sin(b.age * b.turnFreq + b.turnPhase);
+            b.heading += turn * dt;
+            // Soft pull toward downward so the flow stays going down
+            let diff = (Math.PI / 2) - b.heading;
+            while (diff > Math.PI) diff -= 2 * Math.PI;
+            while (diff < -Math.PI) diff += 2 * Math.PI;
+            b.heading += diff * 0.55 * dt;
+            // Hard clamp deviation to ±60° from straight down
+            const maxDev = Math.PI / 3;
+            let dev = b.heading - Math.PI / 2;
+            while (dev > Math.PI) dev -= 2 * Math.PI;
+            while (dev < -Math.PI) dev += 2 * Math.PI;
+            if (Math.abs(dev) > maxDev) b.heading = Math.PI / 2 + Math.sign(dev) * maxDev;
           }
+          const speedMod = b.cavitating ? 1 : (1 + 0.35 * Math.sin(b.age * 2.5 + b.speedPhase));
+          const speed = b.baseSpeed * speedMod;
+          b.vx = Math.cos(b.heading) * speed;
+          b.vy = Math.sin(b.heading) * speed;
+
           const prevX = b.prevX, prevY = b.prevY;
           b.x += b.vx * dt;
           b.y += b.vy * dt;
-          if (b.x < b.r) { b.x = b.r; b.vx = Math.abs(b.vx); }
-          if (b.x > W - b.r) { b.x = W - b.r; b.vx = -Math.abs(b.vx); }
+          if (b.x < b.r) { b.x = b.r; b.heading = Math.PI - b.heading; }
+          if (b.x > W - b.r) { b.x = W - b.r; b.heading = Math.PI - b.heading; }
+
           if (prevX !== undefined) {
             tctx.strokeStyle = b.color;
             tctx.lineWidth = Math.max(1.4, b.r * 0.32);
@@ -202,10 +230,16 @@ import Base from '../layouts/Base.astro';
               for (let k = 0; k < 2; k++) {
                 bubbles.push({
                   x: b.x, y: b.y,
-                  vx: b.vx + rand(-80, 80),
-                  vy: b.vy + rand(10, 50),
                   r: b.r * 0.55,
                   color: b.color,
+                  heading: b.heading + (k === 0 ? -0.55 : 0.55) + rand(-0.15, 0.15),
+                  baseSpeed: b.baseSpeed * rand(0.9, 1.3),
+                  speedPhase: rand(0, Math.PI * 2),
+                  turnPhase: rand(0, Math.PI * 2),
+                  turnFreq: rand(0.8, 2.4),
+                  turnAmp: rand(0.9, 1.8),
+                  age: 0,
+                  vx: 0, vy: 0,
                 });
               }
             }
