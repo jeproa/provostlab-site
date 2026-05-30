@@ -42,6 +42,12 @@ import Base from '../layouts/Base.astro';
       const W = 480, H = 640;
       const board = document.getElementById('board');
       const ctx = board.getContext('2d');
+      // Offscreen layer that accumulates each microbubble's track (the live vasculature)
+      const trail = document.createElement('canvas');
+      trail.width = W; trail.height = H;
+      const tctx = trail.getContext('2d');
+      tctx.lineCap = 'round';
+      tctx.lineJoin = 'round';
       const scoreEl = document.getElementById('score');
       const livesEl = document.getElementById('lives');
       const waveEl = document.getElementById('wave');
@@ -156,20 +162,36 @@ import Base from '../layouts/Base.astro';
         for (const b of bullets) { b.y += b.vy * dt; b.life -= dt; }
         bullets = bullets.filter((b) => b.y + b.r > 0 && b.life > 0);
 
-        // Bubbles — motion + cavitation timer
+        // Bubbles — motion + cavitation timer + track each path onto the vasculature layer
         for (const b of bubbles) {
           if (b.cavitating) {
             b.cavTime += dt;
-            // Damp motion while cavitating (locked in place by the acoustic field)
             const damp = Math.pow(0.35, dt);
             b.vx *= damp;
             b.vy *= damp;
           }
+          const prevX = b.prevX, prevY = b.prevY;
           b.x += b.vx * dt;
           b.y += b.vy * dt;
           if (b.x < b.r) { b.x = b.r; b.vx = Math.abs(b.vx); }
           if (b.x > W - b.r) { b.x = W - b.r; b.vx = -Math.abs(b.vx); }
+          if (prevX !== undefined) {
+            tctx.strokeStyle = b.color;
+            tctx.lineWidth = Math.max(1.4, b.r * 0.32);
+            tctx.beginPath();
+            tctx.moveTo(prevX, prevY);
+            tctx.lineTo(b.x, b.y);
+            tctx.stroke();
+          }
+          b.prevX = b.x;
+          b.prevY = b.y;
         }
+        // Slowly age the vasculature so it keeps evolving
+        tctx.save();
+        tctx.globalCompositeOperation = 'destination-out';
+        tctx.fillStyle = 'rgba(0,0,0,0.004)';
+        tctx.fillRect(0, 0, W, H);
+        tctx.restore();
 
         // Pop bubbles whose cavitation has finished
         for (let j = bubbles.length - 1; j >= 0; j--) {
@@ -357,18 +379,8 @@ import Base from '../layouts/Base.astro';
         // Background
         ctx.fillStyle = '#06070f';
         ctx.fillRect(0, 0, W, H);
-        // Subtle vascular streaks
-        ctx.strokeStyle = 'rgba(255,80,40,0.05)';
-        ctx.lineWidth = 1.2;
-        for (let i = 0; i < 16; i++) {
-          const y = (i / 16) * H;
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          for (let x = 0; x <= W; x += 32) {
-            ctx.lineTo(x, y + Math.sin((x + i * 17) * 0.04) * 3);
-          }
-          ctx.stroke();
-        }
+        // Live vasculature accumulated from microbubble tracks
+        ctx.drawImage(trail, 0, 0);
 
         // Focused beam shapes — hourglass from probe through focus to far field
         for (const bm of beams) {
@@ -519,6 +531,8 @@ import Base from '../layouts/Base.astro';
         ripples = [];
         planeWaves = [];
         beams = [];
+        // Reset the vasculature layer
+        tctx.clearRect(0, 0, W, H);
         score = 0;
         lives = 3;
         wave = 1;
