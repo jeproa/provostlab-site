@@ -22,12 +22,14 @@ import Base from '../layouts/Base.astro';
         <div class="stat"><div class="label">Score</div><div class="value" id="score">0</div></div>
         <div class="stat"><div class="label">Lives</div><div class="value" id="lives">♥♥♥</div></div>
         <div class="stat"><div class="label">Wave</div><div class="value" id="wave">1</div></div>
+        <div class="stat"><div class="label">Pulse</div><div class="value" id="charges">3</div></div>
         <button id="restart" class="btn ghost">New Game</button>
         <details class="controls">
           <summary>Controls</summary>
           <ul>
             <li><kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> move</li>
             <li><kbd>Space</kbd> shoot (hold to auto-fire)</li>
+            <li><kbd>X</kbd> plane wave (super — pops everything)</li>
             <li><kbd>P</kbd> pause</li>
           </ul>
         </details>
@@ -43,6 +45,7 @@ import Base from '../layouts/Base.astro';
       const scoreEl = document.getElementById('score');
       const livesEl = document.getElementById('lives');
       const waveEl = document.getElementById('wave');
+      const chargesEl = document.getElementById('charges');
       const overlay = document.getElementById('overlay');
       const overlayTitle = document.getElementById('overlay-title');
       const overlaySub = document.getElementById('overlay-sub');
@@ -58,8 +61,8 @@ import Base from '../layouts/Base.astro';
         return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
       }
 
-      let player, bullets, bubbles, particles, ripples;
-      let score, lives, wave;
+      let player, bullets, bubbles, particles, ripples, planeWaves;
+      let score, lives, wave, superCharges;
       let lastSpawn, spawnInterval, lastShot, lastTime;
       let paused = false, gameOver = false;
       const SHOT_COOLDOWN = 180;
@@ -94,6 +97,22 @@ import Base from '../layouts/Base.astro';
         ripples.push({ x: player.x + player.w / 2, y: player.y - 4, r: 6, alpha: 0.55 });
       }
 
+      function firePlaneWave() {
+        if (superCharges <= 0) return;
+        superCharges--;
+        planeWaves.push({
+          y: player.y - 4,
+          height: 28,
+          vy: -780,
+          age: 0,
+        });
+        // Three big concentric ripples at the probe face for feedback
+        for (let i = 0; i < 3; i++) {
+          ripples.push({ x: player.x + player.w / 2, y: player.y - 4, r: 8 + i * 4, alpha: 0.6 });
+        }
+        updateStats();
+      }
+
       function popBubble(b, big) {
         const n = big ? 22 : 14;
         for (let i = 0; i < n; i++) {
@@ -116,6 +135,7 @@ import Base from '../layouts/Base.astro';
         scoreEl.textContent = score;
         livesEl.textContent = lives > 0 ? '♥'.repeat(lives) : '—';
         waveEl.textContent = wave;
+        chargesEl.textContent = superCharges;
       }
 
       function tick(dt) {
@@ -216,6 +236,22 @@ import Base from '../layouts/Base.astro';
         for (const r of ripples) { r.r += 80 * dt; r.alpha -= 1.8 * dt; }
         ripples = ripples.filter((r) => r.alpha > 0);
 
+        // Plane waves (super weapon): travel up and pop every bubble they cross
+        for (const w of planeWaves) { w.y += w.vy * dt; w.age += dt; }
+        // Collide each wave with bubbles BEFORE removing off-screen ones
+        for (const w of planeWaves) {
+          const top = w.y - w.height / 2;
+          const bot = w.y + w.height / 2;
+          for (let j = bubbles.length - 1; j >= 0; j--) {
+            const b = bubbles[j];
+            if (b.y + b.r >= top && b.y - b.r <= bot) {
+              popBubble(b, b.r > 22);
+              bubbles.splice(j, 1);
+            }
+          }
+        }
+        planeWaves = planeWaves.filter((w) => w.y + w.height > -20);
+
         // Spawn / wave progression
         const now = performance.now();
         if (now - lastSpawn > spawnInterval) {
@@ -223,9 +259,13 @@ import Base from '../layouts/Base.astro';
           lastSpawn = now;
           spawnInterval = Math.max(280, spawnInterval - 6);
         }
-        // Promote wave every 1500 points
+        // Promote wave every 1500 points; each promotion grants a pulse charge
         const targetWave = 1 + Math.floor(score / 1500);
-        if (targetWave > wave) { wave = targetWave; updateStats(); }
+        if (targetWave > wave) {
+          wave = targetWave;
+          superCharges = Math.min(5, superCharges + 1);
+          updateStats();
+        }
       }
 
       function drawBubble(c, cx, cy, r, color, alpha) {
@@ -328,6 +368,25 @@ import Base from '../layouts/Base.astro';
           ctx.restore();
         }
 
+        // Plane waves — bright cyan band sweeping up the screen
+        for (const w of planeWaves) {
+          const cy = w.y;
+          const h = w.height;
+          const g = ctx.createLinearGradient(0, cy - h, 0, cy + h);
+          g.addColorStop(0, 'rgba(144, 224, 239, 0)');
+          g.addColorStop(0.5, 'rgba(202, 240, 248, 0.95)');
+          g.addColorStop(1, 'rgba(144, 224, 239, 0)');
+          ctx.fillStyle = g;
+          ctx.fillRect(0, cy - h, W, h * 2);
+          // Bright core line
+          ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+          // Faint trailing copy below for motion suggestion
+          ctx.strokeStyle = 'rgba(144, 224, 239, 0.35)';
+          ctx.beginPath(); ctx.moveTo(0, cy + 8); ctx.lineTo(W, cy + 8); ctx.stroke();
+        }
+
         // Ripples on probe firing
         for (const r of ripples) {
           ctx.save();
@@ -376,9 +435,11 @@ import Base from '../layouts/Base.astro';
         bubbles = [];
         particles = [];
         ripples = [];
+        planeWaves = [];
         score = 0;
         lives = 3;
         wave = 1;
+        superCharges = 3;
         lastSpawn = performance.now();
         spawnInterval = 1100;
         lastShot = 0;
@@ -391,7 +452,7 @@ import Base from '../layouts/Base.astro';
       }
 
       document.addEventListener('keydown', (e) => {
-        if (e.code === 'ArrowLeft' || e.code === 'ArrowRight' || e.code === 'Space') {
+        if (e.code === 'ArrowLeft' || e.code === 'ArrowRight' || e.code === 'Space' || e.code === 'KeyX') {
           e.preventDefault();
         }
         if (gameOver) {
@@ -404,6 +465,7 @@ import Base from '../layouts/Base.astro';
           if (paused) showOverlay('Paused');
           else hideOverlay();
         }
+        if (e.code === 'KeyX' && !paused) firePlaneWave();
       });
       document.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
