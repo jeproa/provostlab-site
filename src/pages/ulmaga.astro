@@ -58,19 +58,17 @@ import Base from '../layouts/Base.astro';
       const restartBtn = document.getElementById('restart');
       const resumeBtn = document.getElementById('resume');
 
-      // Doppler-style palette: warm reds and saturated blues
-      const COLORS = [
-        '#ff3a3a', '#e63946', '#d62828', '#ff5252', '#cc1a1a',  // reds
-        '#2a6dff', '#1853c2', '#3389ff', '#0d52cc', '#1f7aff',  // blues
-      ];
+      // Bright Doppler-style palettes; each vessel/trunk is one side or the other
+      const REDS  = ['#ff1f1f', '#ff3838', '#ff5050', '#ff2a4a', '#ff0a0a'];
+      const BLUES = ['#1f5fff', '#3878ff', '#5294ff', '#2870ff', '#0a44ff'];
 
       // Vascular hierarchy: 4 trunks with character (some enter from off-canvas top sides
       // and curve inward); each branches into 2 arterioles, then a spread of capillaries.
       const TRUNKS = [
-        { entryX: -30,        branchX: W * 0.20, sway:  32 },   // top-left, curves right
-        { entryX: W * 0.36,   branchX: W * 0.42, sway:  18 },   // mostly straight, gentle S
-        { entryX: W * 0.64,   branchX: W * 0.58, sway: -18 },   // mirror of trunk 1
-        { entryX: W + 30,     branchX: W * 0.80, sway: -32 },   // top-right, curves left
+        { entryX: -30,        branchX: W * 0.20, sway:  32, palette: 'red'  },
+        { entryX: W * 0.36,   branchX: W * 0.42, sway:  18, palette: 'blue' },
+        { entryX: W * 0.64,   branchX: W * 0.58, sway: -18, palette: 'red'  },
+        { entryX: W + 30,     branchX: W * 0.80, sway: -32, palette: 'blue' },
       ];
       const ARTERIOLE_OFFSET = 48;
       const CAPILLARY_SPREAD = 70;
@@ -124,7 +122,7 @@ import Base from '../layouts/Base.astro';
           x: trunk.entryX + rand(-5, 5),
           y: -r - 10,
           r,
-          color: pick(COLORS),
+          color: pick(trunk.palette === 'red' ? REDS : BLUES),
           heading: Math.PI / 2,
           baseSpeed: rand(45 + wave * 4, 105 + wave * 6),
           speedPhase: rand(0, Math.PI * 2),
